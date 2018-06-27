@@ -125,3 +125,13 @@ the cmd values:
 > - `F_SETOWN`
 > > set/get the process ID or process group ID currently receiving the SIGIO and SIGURG signals
 
+### 11. `ioctl` Function
+
+```c
+#include <unistd.h>  /* System V */
+#include <sys/ioctl.h>  /* BSD and Linux */
+
+int ioctl(int fd, int request, ...);
+```
+
+*TODO* not understood!
