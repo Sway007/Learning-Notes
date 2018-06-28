@@ -125,7 +125,20 @@ the cmd values:
 > - `F_SETOWN`
 > > set/get the process ID or process group ID currently receiving the SIGIO and SIGURG signals
 
-### 11. File System
+*TODO* not understood!
+
+
+### 11. `ioctl` Function
+
+```c
+#include <unistd.h>  /* System V */
+#include <sys/ioctl.h>  /* BSD and Linux */
+
+int ioctl(int fd, int request, ...);
+```
+
+
+### 12. File System
 
 ```c
 #include <unistd.h>
@@ -165,3 +178,5 @@ int unlinkat(int fd, const char *pathname, int flag);
     #include <stdio.h>
     int remove(const char *pathname);
     ```
+
+
