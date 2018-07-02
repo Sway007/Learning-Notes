@@ -125,3 +125,79 @@ the cmd values:
 > - `F_SETOWN`
 > > set/get the process ID or process group ID currently receiving the SIGIO and SIGURG signals
 
+# Chap 4. File and Directories
+
+### file stat
+> <img src='../img/file_stat.png'>
+
+### file permission:  
+> <img src='../img/file_permission.png'>
+
+### 1. `access` and `faccessat`
+
+> the kernel performs its access tests based on the `effective` user and group IDs.
+
+```c
+#include <unistd.h>
+int access(const char *pathname, int mode);
+int faccessat(int fd, const char *pathname, int mode, int flag);
+// Both return: 0 if OK, −1 on error
+```
+> The access and faccessat functions base their tests on the real user and group IDs
+
+### 2. `umask`
+```c
+#include <sys/stat.h>
+mode_t umask(mode_t cmask);
+// Returns: previous file mode creation mask
+```
+
+- example
+```c
+#include "apue.h"
+#include <fcntl.h>
+#define RWRWRW (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
+
+int main(void)
+{
+    umask(0);
+    if (creat("foo", RWRWRW) < 0)
+        err_sys("creat error for foo");
+    umask(S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+    if (creat("bar", RWRWRW) < 0)
+        err_sys("creat error for bar");
+    exit(0);
+}
+/*
+the final file permission is formatted by the bit operation(RWRWRW - umask)
+*/
+```
+
+- shell command `umask`
+
+    1. `umask`:   show current shell file mode creation mask
+    2. `umask mode`: set current shell file mode creation mask
+    3. `umask -S`: show current shell file mode creation mask in `symbolic form`
+
+### 3. `chmod`, `fchmod` and `fchmodat`
+```c
+#include <sys/stat.h>
+int chmod(const char *pathname, mode_t mode);
+int fchmod(int fd, mode_t mode);
+int fchmodat(int fd, const char *pathname, mode_t mode, int flag);
+```
+
+- To change the permission bits of a file, the effective user ID of the process must be equal to the owner ID of the file, or the process must have superuser permissions.
+- The mode is specified as the bitwise OR of the constants shown in figure:
+
+    <img src='../img/mode.png'>
+
+### 4. File Truncation
+
+```c
+#include <unistd.h>
+int truncate(const char *pathname, off_t length); 
+int ftruncate(int fd, off_t length);
+
+```
+- if the previous size was less than length, the file size will increase and the data between the old end of file and the new end of file will read as 0 (i.e., a hole is probably created in the file).
