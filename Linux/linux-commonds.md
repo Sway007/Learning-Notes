@@ -41,3 +41,9 @@ du -sh [sub dir]
 ---------------------------------
 
 [<font size=35>**Resoure link** </font>](http://linuxcommand.org/lc3_learning_the_shell.php)
+
+# file system
+
+## check file stat
+
+    stat *file*

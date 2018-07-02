@@ -14,3 +14,9 @@ $ docker build -f dockerfilepath contextpath
 ```
 
 links:[Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
+
+## Docker run
+
+```
+docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
+```

@@ -201,3 +201,59 @@ int ftruncate(int fd, off_t length);
 
 ```
 - if the previous size was less than length, the file size will increase and the data between the old end of file and the new end of file will read as 0 (i.e., a hole is probably created in the file).
+
+
+*TODO* not understood!
+
+
+### 11. `ioctl` Function
+
+```c
+#include <unistd.h>  /* System V */
+#include <sys/ioctl.h>  /* BSD and Linux */
+
+int ioctl(int fd, int request, ...);
+```
+
+
+### 12. File System
+
+```c
+#include <unistd.h>
+
+int link(const char *existingpath, const char *newpath);
+int linkat(int efd, const char *existingpath, int nfd, const char *newpath, int flag);
+
+int unlink(const char *pathname);
+int unlinkat(int fd, const char *pathname, int flag);
+```
+
+1. every file is identified by _inode number_
+
+2. hard link
+
+    has the same inode numebr
+
+3. symbolic link
+
+    the link file's content is the linked file's mame(path)
+
+    <img src='../img/file_sys_1.png'>
+    <img src='../img/file_sys_2.png'>
+
+4. rename a file
+
+    add a new dirctory entry that points to the existing inode (namely have the same inode number) and then _unlink_ the old directory entry.
+
+5. delet a file
+
+    as long as some process has the file open, its contents will not be deleted. When a file is closed, the kernel first checks the count of the number of processes that have the file open. If this count has reached 0, the kernel then checks the link count; if it is 0, the file’s contents are deleted.
+
+    - process creates a file using either open or creat and then immediately calls unlink. The file is not deleted, however, because it is still open. Only when the process either closes the file or terminates, which causes the kernel to close all its open files, is the file deleted.
+    - We can also unlink a file or a directory with the `remove` function. For a file, remove is identical to unlink. For a directory, remove is identical to `rmdir`.
+
+    ```c
+    #include <stdio.h>
+    int remove(const char *pathname);
+    ```
+
