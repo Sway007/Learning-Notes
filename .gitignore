@@ -2,3 +2,4 @@ ln-*
 ln-*/
 tmp*
 *test*
+*.pdf

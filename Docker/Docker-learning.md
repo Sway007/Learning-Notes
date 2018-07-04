@@ -15,8 +15,27 @@ $ docker build -f dockerfilepath contextpath
 
 links:[Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
 
-## Docker run
+----------------
 
-```
-docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-```
+## Overview
+
+- A container is *launched* by running an image.
+- An image is an executable package that includes everything needed to run an application.
+- A container is a runtime instance of an image
+- hierarchy of docker app:
+
+    * Stack
+    * Services
+    * Container
+
+## Container
+
+- Images are defined by `Dockerfile`
+- Access to resources in container by networking interfaces
+- Create an image by `docker build`
+
+## Service
+
+- compose a container group by `docker-compose.yml`  
+    #TODO: fix me
+- 
