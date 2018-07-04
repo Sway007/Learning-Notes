@@ -179,4 +179,94 @@ int unlinkat(int fd, const char *pathname, int flag);
     int remove(const char *pathname);
     ```
 
+# Chap 5. Standard I/O Library
 
+- When we open or create a file with the standard I/O library, we say that we have associated a stream with the file.
+
+- the standard I/O library does not buffer the characters
+- for the concept of `FILE` structure pls refer to Page 144
+
+- ISO C I/O characteristics:
+    - Stantard input and output are fully buffered if and only if they do not refer to an interactive device.
+    - Standard error is never fully buffered.
+
+### Buffer
+```c
+#include <stdio.h>
+void setbuf(FILE *restrict fp, char *restrict buf );
+int setvbuf(FILE *restrict fp, char *restrict buf, int mode,
+size_t size);
+```
+
+- to disable buffering, set `buf` to `NULL`.
+- the size of `buf` in function `setbuf` must be `BUFSIZE`, a constant defined in `<stdio.h>`.
+- `setvbuf`: specify which type of buffering with the `mode` argument:
+    - `_IOFBF` fully buffered
+    - `_IOLBF` line bufferd
+    - `_IONBF` unbuffered
+- if we specify buffer mode as fully buffered or line buffered, and the `buf` is `NULL`, the standard I/O library will automatically allocate its own buffer of the appropriate size for the stream.
+
+    <img src='../img/setvbuf_default.png'>
+
+- force a stream to be flushed
+
+    ```c
+    #include <stdio.h>
+    int fflush(FILE *fp);
+    ```
+    if `fp` is NULL, `fflush` causes all output streams to be flushed.
+
+- open a stream
+
+    ```c
+    #include <stdio.h>
+    FILE *fopen(const char *restrict pathname, const char *restrict type);
+    FILE *freopen(const char *restrict pathname, const char *restrict type,
+    FILE *restrict fp);
+    FILE *fdopen(int fd, const char *type);
+    ```
+
+    - By default, the stream that is opened is fully buffered, unless it refers to a terminal device, in which case it is line buffered.
+    - close an opened stream
+
+        ```c
+        #include <stdio.h>
+        int fclose(FILE *fp);
+        ```
+        Any buffered output data is flushed before the file is closed. Any input data that may be buffered is discarded.
+
+    - input functions
+
+        ```c
+        #include <stdio.h>
+        int getc(FILE *fp);
+        int fgetc(FILE *fp);
+        int getchar(void);
+        ```
+        1. `getchar` is equivalent to getc(stdin).
+        2. These three functions return the next character as an unsigned char converted to an int.
+
+    - check error occurred or the end of file has been encountered.
+
+        ```c
+        #include <stdio.h>
+        int ferror(FILE *fp);
+        int feof(FILE *fp);
+        // Both return: nonzero (true) if condition is true, 0 (false) otherwise
+        void clearerr(FILE *fp);
+        ```
+        two flags are maintained for each stream in the `FILE` object:
+        - an error flag
+        - an end-of-file flag  
+        both flag are cleared by calling `clearerr`
+        
+    - output functions
+
+        ```c
+        #include <stdio.h>
+        int putc(int c, FILE *fp);
+        int fputc(int c, FILE *fp);
+        int putchar(int c);
+        ```
+
+# TODO 5.7 page 152
