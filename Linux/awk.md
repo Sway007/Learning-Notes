@@ -64,4 +64,38 @@
 
     repeat operator
 
-# TODO p.53
+- word class
+
+    - `[:alnum:]`
+    - `[:alpha:]`
+    - `[:blank:]`   space and tab
+    - `[:cntrl:]`
+    - `[:digit:]`
+    - `[:graph:]`
+    - `[:lower:]`
+    - `[:print:]`
+    - `[:punct:]`
+    - `[:space:]`
+    - `[:upper:]`
+    - `[:xdigit:]`
+
+- summary
+
+    - written as `/.../`
+    - match expression using `~` and `!~`
+
+## Reading input files
+
+- The input is read in units called records, and is processed by the rules of your program one record at a time. By default, each record is one line. Each record is automatically split into chunks called fields.
+
+- fields are separated by whitespace by default, can be referred by `$`
+    - `$0` refer to the whole input record.
+    - `NR`: the number of records read so far.
+    - `NF`: the number of fields
+
+> t is a common error to try to change the field separators in a record simply by setting FS and OFS, and then expecting a plain ‘print’ or ‘print $0’ to print the modified record.  
+> But this does not work, because nothing was done to change the record itself. Instead, you must force the record to be rebuilt, typically with a statement such as ‘$1 = $1’, as described earlier.
+
+- `FS`: specify the field separator, whitespace by default.
+
+# TODO p. 70

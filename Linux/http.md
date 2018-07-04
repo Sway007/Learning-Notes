@@ -19,3 +19,9 @@
 ### `PUT`
 
   _**Replace**_ all current representations of the target resource with the request payload.
+
+## Error Code
+
+- `400`
+
+  格式错误，服务器不能解析
