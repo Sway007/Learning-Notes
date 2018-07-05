@@ -359,7 +359,7 @@ size_t size);
     - The size of the stream’s contents is determined by how much we write to it.
         > see programe Figure 5.15
 
-# Chap 3. System Data Files and Information
+# Chap 6. System Data Files and Information
 
 ## Password File
 
