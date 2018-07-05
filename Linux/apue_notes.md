@@ -359,4 +359,81 @@ size_t size);
     - The size of the stream’s contents is determined by how much we write to it.
         > see programe Figure 5.15
 
-# TODO Chapter 6
+# Chap 3. System Data Files and Information
+
+## Password File
+
+- file path: `/etc/passwd`
+- place holder for password
+    - second
+- name of the executable program to be used as the login shell for user
+    - last
+    - `/bin/false`, `/bin/true`, `/bin/nologin`, `/dev/null` used to prevent a particular user from logging into a system
+- `nobody` user can be used to allow people login with no privileges.
+
+```c
+#include <pwd.h>
+struct passwd *getpwuid(uid_t uid);
+struct passwd *getpwnam(const char *name);
+```
+> return a pointer to a passwd structure that the functions fill in. the returned structure is usually a static variable within the function.
+
+## Group File
+
+- file path: `/etc/group`
+- group structure
+
+    <img src='../img/group_structure.png'>
+
+    ```c
+    #include <grp.h>
+    struct group *getgrgid(gid_t gid);
+    struct group *getgrnam(const char *name);
+    ```
+    ```c
+    #include <unistd.h>
+    int getgroups(int gidsetsize, gid_t grouplist[]);
+    // Returns: number of supplementary group IDs if OK, −1 on error
+
+    #include <grp.h> /* on Linux */
+    #include <unistd.h> /* on FreeBSD, Mac OS X, and Solaris */
+    int setgroups(int ngroups, const gid_t grouplist[]);
+
+    #include <grp.h> /* on Linux and Solaris */
+    #include <unistd.h> /* on FreeBSD and Mac OS X */
+    int initgroups(const char *username, gid_t basegid);
+    ```
+    - `getgroups`: get all the groups which current process uidz belongs to 
+    - system data files and respectively set/get functions
+
+        <img src='../img/datafiles.png'>
+
+## Login Accounting
+
+> Two data files provided with most UNIX systems are the **_utmp_** file, which keeps track of all the users currently logged in, and the **_wtmp_** file, which keeps track of all logins and logouts.
+- file path: `/var/log/wtmp` and `/var/run/utmp`
+
+## System Identification
+
+```c
+#include <sys/utsname.h>
+int uname(struct utsname *name);
+```
+
+```c
+struct utsname {
+    char sysname[]; /* name of the operating system */
+    char nodename[]; /* name of this node */
+    char releasep[]; /* current release of operating system */
+    char version[];
+    char machine[]; /* name of hardware type */
+};
+```
+```c
+#include <unistd.h>
+int gethostname(char *name, int namelen);
+```
+
+## Time and Date Routines
+
+# TODO Page. 189
