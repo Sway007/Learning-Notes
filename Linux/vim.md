@@ -40,3 +40,8 @@
 - `0`
   
   always moves the cursor to the "first column"
+
+## copy lines to system clipboard
+
+1. using `v` mode select lines to be copied
+2. `"+y`: copy to clipboard
