@@ -98,4 +98,13 @@
 
 - `FS`: specify the field separator, whitespace by default.
 
-# TODO p. 70
+- `-F`: set field separator in command line.
+- `RS=""`: set the blank lines to be the record separator, same as `RS="\n\n+"`
+
+## Printing Output
+
+- `print` with no arguments is equivalent to `print $0`. To print a blank line, use `print ""`.
+- specify output field separator using `OFS`, the initial value is `" "`
+- specify output record separator using `ORS`, the initial value is `\n`
+
+# TODO Page 96
