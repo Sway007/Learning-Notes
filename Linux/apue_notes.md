@@ -269,4 +269,94 @@ size_t size);
         int putchar(int c);
         ```
 
-# TODO 5.7 page 152
+- Binary I/O
+
+    ```c
+    #include <stdio.h>
+    size_t fread(void *restrict ptr, size_t size, size_t nobj, FILE *restrict fp);
+
+    size_t fwrite(const void *restrict ptr, size_t size, size_t nobj, FILE *restrict fp);
+    // Both return: number of objects read or written
+    ```
+
+- postion a stream
+
+    ```c
+    #include <stdio.h>
+    long ftell(FILE *fp);
+    // Returns: current file position indicator if OK, −1L on error
+    int fseek(FILE *fp, long offset, int whence);
+    // Returns: 0 if OK, −1 on error
+    void rewind(FILE *fp);
+    ```
+    - for a binary file, postion indicator is measured in bytes from the beginning of the file
+
+- Formatted I/O
+
+    ```c
+    #include <stdio.h>
+    int printf(const char *restrict format, ...);
+    int fprintf(FILE *restrict fp, const char *restrict format, ...);
+    int dprintf(int fd, const char *restrict format, ...);
+    // All three return: number of characters output if OK, negative value if output error
+    int sprintf(char *restrict buf, const char *restrict format, ...);
+    // Returns: number of characters stored in array if OK, negative value if encoding error
+    int snprintf(char *restrict buf, size_t n, const char *restrict format, ...);
+    // Returns: number of characters that would have been stored in array if buffer was large enough, negative value if encoding error
+    ```
+
+    - `printf`: write to the standard output
+    - `fprintf`: write to the specified stream
+    - `dprintf`: write to the specified file descriptor
+    - `sprintf`: palce the formatted characters in the array `buf`, and automatically append a null byte at the end of the array.
+    - `snprintf`: a more secure version of `sprintf`. truncate the characters if its length exceed the size of `buf`
+
+    - conversion syntax
+
+        `$[flags][fldwidth][precision][lenmodifier]convtype`
+
+        check the details in Page. 160
+
+> the standard I/O library ends up calling the I/O routines that described in Chapter 3. Each Stantard I/O stream has an associated file descriptor. Obtain the descriptor for a stream by calling `fileno`
+-
+    ```c
+    #include <stdio.h>
+    int fileno(FILE *fp);
+    ```
+
+- Temporary files and directories
+
+    ```c
+    #include <stdio.h>
+    char *tmpnam(char *ptr);
+
+    FILE *tmpfile(void);
+    ```
+    - `tmpnam` create a tmp filename which does not match any existing file's name.
+
+    - `tmpfile` creates a temporary binary file (type wb+) that is automatically removed when it is closed or on program termination.
+    
+    ```c
+    #include <stdlib.h>
+    char *mkdtemp(char *template);
+    int mkstemp(char *template);
+    ```
+    - Unlike `tmpfile`, the temporary file created by `mkstemp` is not removed
+    automatically for us.
+
+- Memory Streams
+
+    Memory streams have no underlying files, although they are accessed with `FILE` pointers.
+    - create memory stream
+        ```c
+        #include <stdio.h>
+        FILE *fmemopen(void *restrict buf, size_t size, const char *restrict type);
+        ```
+
+        if the `buf` is null, then the `fmemopen` allocates a buffer of `size` bytes.
+
+    - whenever a memory stream is opened for append, the current file position is set to the first null byte in the buffer
+    - The size of the stream’s contents is determined by how much we write to it.
+        > see programe Figure 5.15
+
+# TODO Chapter 6
