@@ -1,4 +1,7 @@
+test*
+*.pdf
 ln-*
 ln-*/
 tmp*
 *test*
+*.pdf
