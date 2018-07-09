@@ -93,7 +93,7 @@
     - `NR`: the number of records read so far.
     - `NF`: the number of fields
 
-> t is a common error to try to change the field separators in a record simply by setting FS and OFS, and then expecting a plain ‘print’ or ‘print $0’ to print the modified record.  
+> it is a common error to try to change the field separators in a record simply by setting FS and OFS, and then expecting a plain ‘print’ or ‘print $0’ to print the modified record.  
 > But this does not work, because nothing was done to change the record itself. Instead, you must force the record to be rebuilt, typically with a statement such as ‘$1 = $1’, as described earlier.
 
 - `FS`: specify the field separator, whitespace by default.
