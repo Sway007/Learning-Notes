@@ -120,4 +120,54 @@
 
 ## Expressions
 
-# TODO Page. 114
+- a regexp constants appear by itself, it has the same meaning as `'($0 ~ /foo/)'`
+
+    > expression `'match = /foo/'` assigns either 0 or 1 to variable match. It is equivalent to `'match = ($0 ~ /foo/)'`
+
+- strongly typed regexp constants
+    - preceded by `'@'` sign:
+
+        ```awk
+        re = @/foo/ # Regexp variable
+        ```
+
+- variables
+    - variables are initialized to the empty string, which is zero if converted to a number.
+    - assign variable on the command line
+        ```awk
+        varible=text # set at the beginning of awk or in between input files.
+        # or
+        -v varible=text # at the very beginnig.
+        ```
+
+    - conversion between numbers and strings
+        - number to string: concatenate number with empty string `""`.
+        - string to number: add zero to the string.
+        - strings that cannot be interpreted as valid unmber convert to zero.
+        - number are conerted using the `sprintf()` function with `CONVFMT` as the format specifier.    
+            > `CONVFMT`'s default value is `"%.6g"`
+            - as a special case, if a number is an integer, the result of conversion is **_always_** an integer.
+            - example
+                ```awk
+                awk 'BEGIN {OFMT="%2.1f"
+                CONVFMT="%1.3f"
+                a=12.23232
+                print a"";print a}'
+                ```
+
+        - there is only one string operation: concatenation.
+
+        ```awk
+        awk `BEGIN {print -12 "" -24}`
+        # equivalent to -12(" " - 24), so get output: -12-24
+        ```
+
+        - Fields, `getline` input, `FILENAME`, `ARGV` elements, `ENVIRON` elements and the elements of an array created bu `match()`, `split()`, and `patsplit()` that are numeric strings have the **_strnum_** attribute. Otherwise, they have the _string_ attribute. Uninitialized variables also have the **_strnum_** attribute.
+        
+> the righthand operand of the `~` and `!~` operators may be either a regex constant`(/.../)` or an ordinary expression. In the latter case, the 
+> value of the expression as a string is used as a dynamic regex.
+
+- boolean expressions
+    - Boolean expression have numeric values(1 for true, 0 for false) if the result of the boolean expression is stored in a variable or used in arithmetic.
+
+# TODO: Chapter 7. 141
