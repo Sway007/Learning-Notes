@@ -257,8 +257,6 @@ int unlinkat(int fd, const char *pathname, int flag);
     int remove(const char *pathname);
     ```
 
-<<<<<<< HEAD
-=======
 # Chap 5. Standard I/O Library
 
 - When we open or create a file with the standard I/O library, we say that we have associated a stream with the file.
@@ -516,5 +514,43 @@ int gethostname(char *name, int namelen);
 
 ## Time and Date Routines
 
-# TODO Page. 189
->>>>>>> 7e8910a6dd2419931a92634f3484150339b2075c
+
+
+## `getrlimit` and `setrlimit` Functions
+
+- query and set resource limit
+
+```c
+#include <sys/resource.h>
+int getrlimit(int resource, struct rlimit *rlptr);
+int setrlimit(int resource, const struct rlimit *rlptr);
+```
+
+
+# Chapter 9. Process Control
+
+- Get identifiers for process
+
+    ```c
+    #include <unistd.h>
+
+    pid_t getpid(void);
+    //Returns: process ID of calling process
+
+    pid_t getppid(void);
+    //Returns: parent process ID of calling process
+
+    uid_t getuid(void);
+    //Returns: real user ID of calling process
+
+    uid_t geteuid(void);
+    //Returns: effective user ID of calling process
+
+    gid_t getgid(void);
+    //Returns: real group ID of calling process
+    
+    gid_t getegid(void);
+    //Returns: effective group ID of calling process
+    ```
+
+    [the_difference_between_real_user_id_and_effective_user_id](https://intelligea.wordpress.com/2014/02/11/effective-user-id-and-group-id-vs-real-user-id-and-group-id/)
