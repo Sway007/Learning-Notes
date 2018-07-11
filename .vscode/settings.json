@@ -1,6 +1,8 @@
 {
     "python.pythonPath": "/usr/bin/python3",
+    "C_Cpp.default.includePath": ["./Linux/ln-apue-source/include"],
     "files.associations": {
-        "apue.h": "c"
+        "apue.h": "c",
+        "cstdlib": "c"
     }
 }

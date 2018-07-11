@@ -257,8 +257,6 @@ int unlinkat(int fd, const char *pathname, int flag);
     int remove(const char *pathname);
     ```
 
-<<<<<<< HEAD
-=======
 # Chap 5. Standard I/O Library
 
 - When we open or create a file with the standard I/O library, we say that we have associated a stream with the file.
@@ -322,6 +320,10 @@ size_t size);
         int getc(FILE *fp);
         int fgetc(FILE *fp);
         int getchar(void);
+
+        #include <stdio.h>
+        char *fgets(char *restrict buf, int n, FILE *restrict fp);
+        char *gets(char *buf );
         ```
         1. `getchar` is equivalent to getc(stdin).
         2. These three functions return the next character as an unsigned char converted to an int.
@@ -516,5 +518,163 @@ int gethostname(char *name, int namelen);
 
 ## Time and Date Routines
 
-# TODO Page. 189
->>>>>>> 7e8910a6dd2419931a92634f3484150339b2075c
+```c
+#include <time.h>
+time_t time(time_t *calptr);
+```
+- The time value is always returned as the value of the function. If the argument is non-null, the time value is also stored at the location pointed to by `calptr`.
+- these seconds are represented in a `time_t` data type, and we call them **_calendar times_**.
+- two functions `localtime` and `gmtime` convert a calendar time into what's called a broken-down time, a `tm` structure.
+
+    <img src='../img/struct_tm.png'>
+
+- `printf-`like function for time values.
+    ```c
+    #include <time.h>
+    size_t strftime(char *restrict buf, size_t maxsize,
+    const char *restrict format,
+    const struct tm *restrict tmptr);
+    size_t strftime_l(char *restrict buf, size_t maxsize,
+    const char *restrict format,
+    const struct tm *restrict tmptr, locale_t locale);
+    ```
+    <img src='../img/strftime.png'>
+
+
+# Chap 7. Process Environment
+
+## `main` Function
+
+```c
+int main(int argc, char *argv[]);
+```
+`argc` is the number of command line arguments, and `argv` is an array of pointers to the arguments.
+
+## Process Termination
+
+- nomal termination
+
+    1. return from `main`
+    2. calling `exit`
+    3. calling `_exit` or `_Exit`
+    4. return of the last thread from its start routine
+    5. calling `pthread_exit` from the last thread
+
+- abnormal termination
+
+    1. calling `abort`
+    2. receipt of a siginal
+    3. response of the last thread to a cancellation request
+
+## Exit Function
+```c
+#include <stdlib.h>
+void exit(int status);
+void _Exit(int status);
+#include <unistd.h>
+void _exit(int status);
+```
+- `_exit` and `_Exit` return to the kernel immediately, and `exit` will perform certain cleanup processing before returning to the kernel.
+- `atexit` Function
+    ```c
+    #include <stdlib.h>
+    int atexit(void (*func)(void));
+    ```
+    - registrer function which will be called when process exits.
+    - Each function is called as many times as it was registered.
+
+        <img src='../img/process_workflow.png'>
+
+    - The only way a program can be executed by the kernel is if one of the exec functions is called.
+
+## Environment List
+
+> Each program is passed an environment list. the list is an array of character pointers. the address of the list is contained in the global variable `environ`:
+
+```c
+extern char **environ;
+```
+
+## Memory Layout of a C Program
+
+- C program is composed of the following pieces:
+    1. Text segment 文本段  
+
+        read-only, sharable
+    2. Initialized data segment (初始)数据段
+
+        declaration appearing outside any function causes this variable to be stored in the initialized data segment with its initial value.
+
+    3. Uninitialized data segment(bss) 未初始化数据段
+
+        - data in this segment is initialized by kernel to 0 or null pointers.
+        - declaration appearing outside any function without initialization cause the varible to be stored in the uninitialized data segment.
+
+    4. Stack 栈
+
+        section where all automatic variables are stored
+
+    5. heap 堆
+
+        where dynamic memory allocation usually takes place
+
+    <img src='../img/memory_allocation.png'>
+
+## shared library
+
+```shell
+gcc -static hello.c  # prevent gcc from using shared libraries
+```
+
+## Memory Allocation
+
+```c
+#include <stdlib.h>
+void *malloc(size_t size);
+void *calloc(size_t nobj, size_t size);
+void *realloc(void *ptr, size_t newsize);
+// All three return: non-null pointer if OK, NULL on error
+
+void free(void *ptr);
+```
+
+1. `malloc`, initial value of the allocated memory is indeterminate.
+2. `calloc`, the value of the allocated memory is initialized to all 0 bits.
+3. `realloc`, it may involve moving the previously allocated area somewhere else, to provide the additional room at the end(**_If there is room beyond the end of the existing region for the requested space, then realloc simply allocates this additional area at the end and returns the same pointer that we passed it._**). Also,  when the size increases, the initial value of the space between the old contents and the end of the new area is indeterminate.
+
+## Envirionment Variables
+
+```c
+#include <stdlib.h>
+char *getenv(const char *name);
+// Returns: pointer to value associated with name, NULL if not found
+```
+
+``` c
+#include <stdlib.h>
+int putenv(char *str);
+// Returns: 0 if OK, nonzero on error
+
+int setenv(const char *name, const char *value, int rewrite);
+int unsetenv(const char *name);
+// Both return: 0 if OK, −1 on error
+```
+
+- the environment list is an array of pointers to the actual _`name=value`_ strings, and the strings are typically stored at the top of a process's memory space.
+
+## `setjmp` and `longjmp` Functions
+
+```c
+#include <setjmp.h>
+int setjmp(jmp_buf env);
+// Returns: 0 if called directly, nonzero if returning from a call to longjmp
+
+void longjmp(jmp_buf env, int val);
+```
+
+- branch back through the call frames to a function that is in the call path of the current function.
+- the _`val`_ in `longjmp` is a nonzero value that becomes the return  value from `setjmp`.
+
+## `getrlimit` and `setrlimit` Functions
+
+### TODO
