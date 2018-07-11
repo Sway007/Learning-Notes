@@ -518,6 +518,7 @@ int gethostname(char *name, int namelen);
 
 ## Time and Date Routines
 
+<<<<<<< HEAD
 ```c
 #include <time.h>
 time_t time(time_t *calptr);
@@ -678,3 +679,45 @@ void longjmp(jmp_buf env, int val);
 ## `getrlimit` and `setrlimit` Functions
 
 ### TODO
+=======
+
+
+## `getrlimit` and `setrlimit` Functions
+
+- query and set resource limit
+
+```c
+#include <sys/resource.h>
+int getrlimit(int resource, struct rlimit *rlptr);
+int setrlimit(int resource, const struct rlimit *rlptr);
+```
+
+
+# Chapter 9. Process Control
+
+- Get identifiers for process
+
+    ```c
+    #include <unistd.h>
+
+    pid_t getpid(void);
+    //Returns: process ID of calling process
+
+    pid_t getppid(void);
+    //Returns: parent process ID of calling process
+
+    uid_t getuid(void);
+    //Returns: real user ID of calling process
+
+    uid_t geteuid(void);
+    //Returns: effective user ID of calling process
+
+    gid_t getgid(void);
+    //Returns: real group ID of calling process
+    
+    gid_t getegid(void);
+    //Returns: effective group ID of calling process
+    ```
+
+    [the_difference_between_real_user_id_and_effective_user_id](https://intelligea.wordpress.com/2014/02/11/effective-user-id-and-group-id-vs-real-user-id-and-group-id/)
+>>>>>>> 648c85423dfd6ae1664740acf1df1ae4662d878e
