@@ -518,7 +518,6 @@ int gethostname(char *name, int namelen);
 
 ## Time and Date Routines
 
-<<<<<<< HEAD
 ```c
 #include <time.h>
 time_t time(time_t *calptr);
@@ -679,7 +678,6 @@ void longjmp(jmp_buf env, int val);
 ## `getrlimit` and `setrlimit` Functions
 
 ### TODO
-=======
 
 
 ## `getrlimit` and `setrlimit` Functions
@@ -720,4 +718,65 @@ int setrlimit(int resource, const struct rlimit *rlptr);
     ```
 
     [the_difference_between_real_user_id_and_effective_user_id](https://intelligea.wordpress.com/2014/02/11/effective-user-id-and-group-id-vs-real-user-id-and-group-id/)
->>>>>>> 648c85423dfd6ae1664740acf1df1ae4662d878e
+
+
+
+- File Sharing
+
+    - when the standard output in parent process is redirected, the child's standard output is also redirected.
+    - all file descriptors that are open in the parent are duplicated in the child.
+
+- properties of the parent inherited by the child:
+    - Real user ID, real group ID, effective user ID, and effective group ID
+    - Supplementary group IDs
+    - Process group ID
+    - Session ID
+    - Controlling terminal
+    - The set-user-ID and set-group-ID flags
+    - Current working directory
+    - Root directory
+    - File mode creation mask
+    - Signal mask and dispositions
+    - The close-on-exec flag for any open file descriptors
+    - Environment
+    - Attached shared memory segments
+    - Memory mappings
+    - Resource limits
+
+- The differences between the parent and child:
+    - The return values from fork are different.
+    - The process IDs are different.
+    - The two processes have different parent process IDs: the parent process ID of the child is the parent; the parent process ID of the parent doesn’t change.
+    - The child’s tms_utime, tms_stime, tms_cutime, and tms_cstime values are set to 0 (these times are discussed in Section 8.17).
+    - File locks set by the parent are not inherited by the child.
+    - Pending alarms are cleared for the child.
+    - The set of pending signals for the child is set to the empty set.
+
+## `vfork`
+
+- The vfork function was intended to create a new process for the purpose of executing a new program
+- vfork guarantees that the child runs first, until the child calls `exec` or `exit`.
+- the child runs in the address space of the parent until it calls either exec or exit.
+
+## `exit`
+
+- call `_exit` or `_Exit` to terminate a process without running exit handlers or signal handlers
+- abnormal termination:
+    -  calling `abort`: generate the `SIGABRT` signal.
+    -  When the process receives certain signals
+    -  The last thread responds to a cancellation request
+
+> Regardless of how a process terminates, the same code in the kernel is eventually executed. This kernel code closes all the open descriptors for the process, releases the memory that it was using, and so on.
+
+- the way inform parent process how the child terminated:
+    - for `exit`s, passing an exit status
+    - for abnormal termination, the kernel—not the process—generates a termination status to indicate the reason for the abnormal termination.
+    - In any case, the parent of the process can obtain the termination status from either the wait or the waitpid function
+
+- if the parent terminates before the child, the `init` process becomes the parent process of any process whose parent terminates. whenever a process terminates, the kernel goes through all active processes to see whether the terminating process is the parent of any process that still exists.
+- The kernel keeps a small amount of information for every terminating process, so that the information is available when the parent of the terminating process calls `wait` or `waitpid`.
+    > this information consists of the process ID, the termination status of the process, and the amount of CPU time taken by the process
+
+- _`zombie process`_: a process that has terminated, but whose parent has not yet waited for it, is called a zombie.
+
+// TODO: wait and waitpid
