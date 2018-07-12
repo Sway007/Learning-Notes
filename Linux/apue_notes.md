@@ -790,4 +790,53 @@ pid_t fork(void);
 
 - _`zombie process`_: a process that has terminated, but whose parent has not yet waited for it, is called a zombie.
 
-// TODO: wait and waitpid
+## _`wait`_ and _`waitpid`_ Functions
+
+```c
+#include <sys/wait.h>
+pid_t wait(int *statloc);
+pid_t waitpid(pid_t pid, int *statloc, int options);
+//   Both return: process ID if OK, 0 (see later), or −1 on error
+```
+
+- when a precess terminates(either normally or abnormally), the kernel notifies the parent by sending _`SIGCHLD`_ signal to the parent.
+- `wait` will return immediately with an erro if it dosen't have any child processes.
+- If a child has already terminated and is a zombie, `wait` returns immediately with that child’s status.
+- if _`statloc`_ is not null, the termination status of the terminated process is stored in the location pointed by the argument. certain bits indicate the exit status, others indicate the signal number, and so on.
+- _`waitpid`_
+    - `pid==-1`, wait for any child process
+    - `pid>0`, wait for the specified process
+    - `pid==0`, Waits for any child whose process group ID equals that of the calling process.
+    - `pid<-1`, Waits for any child whose process group ID equals the absolute value of pid.
+
+- the _`options`_ argument for _`waitpid`_:
+    - `WCONTINUED`
+    - `WNOHANG`
+    - `WUNTRACED`
+
+> If we want to write a
+process so that it forks a child but we don’t want to wait for the child to complete and we don’t want the child to become a zombie until we terminate, the trick is to call _**`fork twice`**_.
+
+## _`exec`_ Functions
+
+> When a process calls one of the exec functions, that process is completely replaced by the new program, and the new program starts executing at its main function. _**The process ID does not change across an exec, because a new process is not created; exec merely replaces the current process — its text, data, heap, and stack segments — with a brand-new program from disk.**_ 
+
+```c
+#include <unistd.h>
+int execl(const char *pathname, const char *arg0, ... /* (char *)0 */ );
+int execv(const char *pathname, char *const argv[]);
+int execle(const char *pathname, const char *arg0, ... /* (char *)0, char *const envp[] */ );
+int execve(const char *pathname, char *const argv[], char *const envp[]);
+int execlp(const char *filename, const char *arg0, ... /* (char *)0 */ );
+int execvp(const char *filename, char *const argv[]);
+int fexecve(int fd, char *const argv[], char *const envp[]);
+```
+
+> If filename contains a slash, it is taken as a pathname, otherwise, the executable file is searched for in the directories specified by the _`PATH`_ environment variable
+
+- if the file ins't machine executable, the functions assume that file is a shell script adn tries to invoke `/bin/sh` with the filename as input to the shell.
+- If this null pointer is specified by the constant 0, we must cast it to a pointer; if we don’t, it’s interpreted as an integer argument. (for the executable file in `exec` function)
+
+    <img src='../img/exec.png'>
+
+- the first argument in arglist is the executable file name.
