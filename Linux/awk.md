@@ -170,4 +170,70 @@
 - boolean expressions
     - Boolean expression have numeric values(1 for true, 0 for false) if the result of the boolean expression is stored in a variable or used in arithmetic.
 
-# TODO: Chapter 7. 141
+# Chapter 7. 141
+
+## Patter Elements
+
+- patter elements class
+    - _`/regex/`_
+    - _`expression`_
+        
+        match when its value is nonzero or non-null
+    - _`begpat, endpat`_
+    - `BEGIN`, `END`
+    - `BEGINEFILE`, `ENDFILE`
+    - _`empty`_
+
+        match every input record
+
+- the expression in pattern is reevaluated each time the rule is tested against a new input record
+- boolean expression are also commonly used as patterns. for example:
+
+    ```awk
+    awk ’/edu/ && /li/’ mail-list
+    # match if the record  contain 'edu' and `li`
+    ```
+- `begpat, endpat`
+
+    - when a record matchs `begpat`, the range pattern is turned on. as long as the range pattern stays turned on, it automatically matched every input read.
+    - If the record satisfies both conditions, then the action is executed for just that record.
+    - range patterns donot combine with other patterns
+
+- input/ouput from `EBGIN` and `END` rules
+    - no input record for `BEGIN`
+    - `$0` and `NF` are undefined inside an `END` rule.
+
+## Actions
+
+- action is enclosed in braces ('{...}'), statement are separated by newlines or semicolons.
+
+## Control Statements in Actions
+
+- `if-else`
+
+    ```awk
+    if (condition) then-body [else else-body]
+    ```
+
+- `for`
+
+    ```awk
+    for (initialization; condition; increment)
+        body
+    ```
+    - It isn’t possible to set more than one variable in the initialization part without using a multiple assignment statement such as ‘x = y = 0’.
+
+- `switch`
+
+    ```awk
+    switch (expression) {
+        case value or regular expression:
+            case-body
+        default:
+            default-body
+    }
+    ```
+
+- `next`
+
+// TODO

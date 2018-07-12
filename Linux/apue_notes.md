@@ -518,7 +518,6 @@ int gethostname(char *name, int namelen);
 
 ## Time and Date Routines
 
-<<<<<<< HEAD
 ```c
 #include <time.h>
 time_t time(time_t *calptr);
@@ -676,11 +675,6 @@ void longjmp(jmp_buf env, int val);
 - branch back through the call frames to a function that is in the call path of the current function.
 - the _`val`_ in `longjmp` is a nonzero value that becomes the return  value from `setjmp`.
 
-## `getrlimit` and `setrlimit` Functions
-
-### TODO
-=======
-
 
 ## `getrlimit` and `setrlimit` Functions
 
@@ -720,4 +714,12 @@ int setrlimit(int resource, const struct rlimit *rlptr);
     ```
 
     [the_difference_between_real_user_id_and_effective_user_id](https://intelligea.wordpress.com/2014/02/11/effective-user-id-and-group-id-vs-real-user-id-and-group-id/)
->>>>>>> 648c85423dfd6ae1664740acf1df1ae4662d878e
+
+## _`fork`_ Function
+```c
+#include <unistd.h>
+pid_t fork(void);
+//Returns: 0 in child, process ID of child in parent, −1 on error
+```
+
+- the child gets a copy of the parent's data space, heap and stack, share the text segment
