@@ -675,13 +675,6 @@ void longjmp(jmp_buf env, int val);
 - branch back through the call frames to a function that is in the call path of the current function.
 - the _`val`_ in `longjmp` is a nonzero value that becomes the return  value from `setjmp`.
 
-<<<<<<< HEAD
-=======
-## `getrlimit` and `setrlimit` Functions
-
-### TODO
-
->>>>>>> fd1446e02f00cdb41ef6c684ef93a6bf46d5a0a6
 
 ## `getrlimit` and `setrlimit` Functions
 
@@ -840,3 +833,32 @@ int fexecve(int fd, char *const argv[], char *const envp[]);
     <img src='../img/exec.png'>
 
 - the first argument in arglist is the executable file name.
+
+
+## suid, effective-uid, read-uid
+
+[link](https://blog.csdn.net/fmeng23/article/details/23115989)
+
+## Interpreter Files(scripts)
+
+- begin with a line of the form
+
+    ```
+    #! pathname [ optional-argument ]
+    ```
+
+- the pathname is recognized by the kernel as part of processsing the `exec` system call.
+
+## _`system`_ function
+
+```c
+#include <stdlib.h>
+int system(const char *cmdstring);
+```
+
+- _`system`_ is implemented by calling fork, exec, and waitpid
+
+
+## Set-User-ID Programs
+
+// TODO

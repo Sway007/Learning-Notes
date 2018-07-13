@@ -3,6 +3,7 @@
     "C_Cpp.default.includePath": ["./Linux/ln-apue-source/include"],
     "files.associations": {
         "apue.h": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "wait.h": "c"
     }
 }
