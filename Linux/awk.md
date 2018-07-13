@@ -236,4 +236,4 @@
 
 - `next`
 
-// TODO
+    - the `next` statement forces `awk` to immediately stop processing the current record and go on to the next record. the rest fo the current rule's action won't be executed.
