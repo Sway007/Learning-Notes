@@ -859,6 +859,48 @@ int system(const char *cmdstring);
 - _`system`_ is implemented by calling fork, exec, and waitpid
 
 
-## Set-User-ID Programs
+## Process Accounting
 
-// TODO
+// TODO [not understood]
+
+## User Identification
+
+# Process Relationships
+
+## Terminal Logins
+
+- _`login`_ workflow
+
+    <img src="../img/login.png">
+
+## Prcess Groups
+
+```c
+#include <unistd.h>
+pid_t getpgrp(void);
+// Returns: process group ID of calling process
+
+#include <unistd.h>
+pid_t getpgid(pid_t pid);
+```
+
+- Each process group can have a process group leader. The leader is identified by its process group ID being equal to its process ID.
+- The process group still exists, as long as at least one process is in the group, regardless of whether the group leader terminates.
+- A process joins an existing process group or creates a new process group by calling _`setpgid`_.
+    ```c
+    #include <unistd.h>
+    int setpgid(pid_t pid, pid_t pgid);
+    ``` 
+
+## Sessions
+
+- A session is a collection of one or more process groups.
+- A process establishes a new session by calling the _`setsid`_ function.
+    ```c
+    #include <unistd.h>
+    pid_t setsid(void);
+    ```
+
+## Controlling Terminal
+
+TODO
