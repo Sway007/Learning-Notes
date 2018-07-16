@@ -237,3 +237,64 @@
 - `next`
 
     - the `next` statement forces `awk` to immediately stop processing the current record and go on to the next record. the rest fo the current rule's action won't be executed.
+
+- `nextfile`
+    - stop processing the current data file
+
+- `exit`
+    - when an `exit` statement is executed, as part of executing the `exit`, the `END` rule is executed
+
+## Predefined Variables
+
+- _`CONVFMT`_
+- _`FIELDWIDTHS`_
+- _`FPAT`_
+    > A regular expression (as a string) that tells gawk to create the fields based on text that matches the regular expression.
+- _`FS`_
+- _`OFMT`_
+- _`OFS`_
+- _`ORS`_
+- _`RS`_
+- _`ARGC, ARGV`_
+- _`ARGIND`_
+    >  The index in _`ARGV`_ of the current file being processed.
+- _`ENVIRON`_
+- _`FILENAME`_
+- _`FNR`_
+    >  The current record number in the current file
+- _`NF`_
+    > The number of fields in the current input record 
+- _`NR`_
+    > The number of input records awk has processed since the beginning of the program’s execution 
+
+# Chapter 8. Arrays in _`AWK`_
+
+## The Basics of Arrays
+
+- any number or string, not just consecutive integers, may be used as an array index.
+- each array in _`awk`_ is a collection of pairs—an index and its corresponding array element value
+- When awk creates an array (e.g., with the split() built-in function), **_that array’s indices are consecutive integers starting at one_**.
+- reffer to an array element
+    ```awk
+    array[index-expression]
+    ```
+- _A reference to an element that does not exist automatically creates that array element, with the null string as its value._
+- check if an element exists at a certain index:   
+    ```awk
+    # index in array
+    if (2 in frequencies)
+        print "Subscript 2 is present."
+    ```
+- loop array
+    ```awk
+    for (indx in array)
+        body
+    ```
+- the awk implementation determines the order in which the array is traversed.
+- set `PROCINFO["sorted_in"]` to specify the order in which _`awk`_ traverse an array [**_only for gawk_**]
+    - "@unsorted" _default_
+    - "@ind_str_asc"
+    - "@ind_num_asc"
+    - "@val_type_asc"
+    - and so on ...
+## TODO Page. 179
