@@ -904,3 +904,127 @@ pid_t getpgid(pid_t pid);
 ## Controlling Terminal
 
 TODO
+
+# Chapter 10. Signals
+
+## Signals
+
+- every signal has a name, all begin with _`SIG`_.
+- conditions generate signal:
+    - termial-generated:
+        - pressing the DELETE key or Control-C, causes the _`SIGINT`_
+    - divide by 0, invalid memory reference.
+    - calling the _`kill`_ function.
+- _`SIGKILL`_ and _`SIGSTOP`_ can never be ignored.
+- UNIX System signals
+    <img src="../img/sigs.png"> 
+    - _`SIGCHLD`_: Whenever a process terminates or stops, the SIGCHLD signal is sent to the parent
+    - _`SIGTERM`_: This is the termination signal sent by the _`kill`_ command by default.
+    - _`SIGUSR1`_, _`SIGUSR2`_: user-defined signals
+
+## _`signal`_ Function
+
+```c
+#include <signal.h>
+void (*signal(int signo, void (*func)(int)))(int);
+// Returns: previous disposition of signal (see following) if OK, SIG_ERR on error
+```
+
+- value of _`func`_:
+    - _`SIG_IGN`_, ignore
+    - _`SIG_DFL`_, default
+    - the address of a function to be called when the signal occurs.
+- The return value from _`signal`_ is the pointer to the previous signal handler.
+- _`signal`_ functionn prototype can be made simpler by:
+    ```c
+    typedef void Sigfunc(int);
+
+    Sigfunc *signal(int, Sigfunc *);
+    ```
+- macros in _`<signal.h>`_:
+    ```c
+    #define SIG_ERR (void (*)())-1
+    #define SIG_DFL (void (*)())0
+    #define SIG_IGN (void (*)())1
+    ``` 
+- the shell automatically sets the disposition of the interrupt and quit signals in the background process to be ignored.
+- _**When a process calls fork, the child inherits the parent’s signal dispositions.**_
+
+## Unreliable Signals
+
+```c
+int sig_int();   /* my signal handling function */
+.
+.
+.
+signal(SIGINT, sig_int) /* establish handler */
+{
+    signal(SIGINT, sig_int); /* reestablish handler for next time */
+    .
+    .
+    .
+}
+```
+
+> The problem with this code fragment is that there is a window of time—after the signal has occurred, but before the call to signal in the signal handler—when the interrupt signal could occur another time
+
+## Interrupted System Calls
+
+> A characteristic of earlier UNIX systems was that if a process caught a signal while the process was blocked in a ‘‘slow’’ system call, the system call was interrupted. The system call returned an error and errno was set to EINTR.
+
+- The problem with interrupted system calls is that we now have to handle the error return explicitly: 
+    ```c
+    again: 
+        if ((n = read(fd, buf, BUFFSIZE)) < 0) {
+            if (errno == EINTR)
+                goto again;   /* just an interrupted system call */
+            /* handle other errors */
+            /* can be rewriten with while statement */
+        }
+    ``` 
+
+- > When a signal that is being caught is handled by a process, the normal sequence of instructions being executed by the process is temporarily interrupted by the signal handler. The process then continues executing, but the instructions in the signal handler are now executed.
+
+## Reentrant Functions
+
+- some function block any signals during operation if delivery of a signal might cause inconsistencies.
+
+## _`SIGCHLD`_ Semantics
+
+- When the signal occurs, the status of a child has changed, and we need to call one of the wait functions to determine what has happened.
+
+- During the time between the generation of a signal and its delivery, the signal is said to be _pending_.
+- the system determines what to do with a blocked signal when the signal is delivered, not when it’s generated.
+- What happens if a blocked signal is generated more than once before the process unblocks the signal? the UNIX kernel simply delivers the signal once.
+- Each process has a **_signal mask_** that defines the set of signals currently blocked from delivery to that process. A process can examine and change its current signal mask by calling _`sigprocmask`_.
+
+## _`kill`_ and _`raise`_ Functions
+
+```c
+#include <signal.h>
+int kill(pid_t pid, int signo);
+int raise(int signo);
+```
+
+- The kill function sends a signal to a process or a group of processes.
+- The raise function allows a process to send a signal to itself.
+    <img src='../img/kill_pid.png'>
+- a process needs permission to send a signal to another process. The superuser can send a signal to any process.
+- > POSIX.1 defines signal number 0 as the null signal. If the signo argument is 0, then the normal error checking is performed by kill, but no signal is sent. This technique is often used to determine if a specific process still exists. If we send the process the null signal and it doesn’t exist, kill returns −1 and errno is set to ESRCH.
+
+## _`alarm`_ and _`pause`_ Functions
+
+```c
+#include <unistd.h>
+unsigned int alarm(unsigned int seconds);
+
+#include <unistd.h>
+int pause(void);
+```
+- When the timer expires, the SIGALRM signal is generated. If we ignore or don’t catch this signal, its default action is to terminate the process.
+- If, when we call alarm, a previously registered alarm clock for the process has not yet expired, the number of seconds left for that alarm clock is returned as the value of this function.
+- The pause function suspends the calling process until a signal is caught.
+
+## Signal Sets
+
+TODO
