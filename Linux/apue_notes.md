@@ -1027,4 +1027,89 @@ int pause(void);
 
 ## Signal Sets
 
+```c
+#include <signal.h>
+int sigemptyset(sigset_t *set);
+int sigfillset(sigset_t *set);
+int sigaddset(sigset_t *set, int signo);
+int sigdelset(sigset_t *set, int signo);
+int sigismember(const sigset_t *set, int signo);
+```
+- `sigemptyset` initializes the signal set pointed to by set so that all signals
+are excluded.
+- `sigfillset` initializes the signal set so that all signals are included.
+
+## `Sigprocmask` Function
+
+```c
+#include <signal.h>
+int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
+```
+- the signal mask of a process is the set of signals currently blocked from delivery to that process
+- the _`how`_ argument indicates how the current signal mask is modified
+    - <img src="../img/sigprocmask.png">
+- If _`set`_ is a null pointer, the signal mask of the process is not changed, and how is ignored.
+
+## `sigpending` Function
+
+```c
+#include <signal.h>
+int sigpending(sigset_t *set);
+```
+- returns the set of signals that are blocked from delivery and currently pending for the calling process.
+
+## `sigaction` Function
+```c
+#include <signal.h>
+int sigaction(int signo, const struct sigaction *restrict act, struct sigaction *restrict oact);
+```
+
+- struct sigaction:
+    ```c
+    struct sigaction {
+        void       (*sa_handler)(int);
+        sigset_t   sa_mask;
+        int        sa_flags;
+        void       (*sa_sigaction)(int, siginfo_t *, void *);
+    }
+    ```
+    - _`sa_handler`_: the address of a signal-catching function or SIG_DFL, SIG_IGN
+    - we are guaranteed that whenever we are processing a given signal, another occurrence of that same signal is blocked until we’re finished processing the first occurrence.
+    - Once we install an action for a given signal, that action remains installed until we explicitly change it by calling sigaction
+    - `SA_SIGINFO` in `sa_flags`: This option provides additional information to a signal handler: a pointer to a siginfo structure and a pointer to an identifier for the process context.
+    - Normally, the signal handler is called as
+        ```c
+        void handler(int signo);
+        ``` 
+        but if the SA_SIGINFO flag is set, the signal handler is called as
+        ```c
+        void handler(int signo, siginfo_t *info, void *context);
+        ``` 
+    - struct `siginfo`:
+        <img src="../img/siginfo.png">
+
+## `sigsetjmp` and `siglongjmp` Functions
+
+```c
+#include <setjmp.h>
+int sigsetjmp(sigjmp_buf env, int savemask);
+void siglongjmp(sigjmp_buf env, int val);
+```
+- when a signal is caught, the signal-catching function is entered, with the current signal automatically being added to the signal mask of the process.
+- These two functions should always be used when branching from a signal handler.
+- If `savemask` is nonzero, then `sigsetjmp` also saves the current signal mask of the process in env. When siglongjmp is called, if the env argument was saved by a call to sigsetjmp with a nonzero savemask, then siglongjmp restores the saved signal mask.
+- _`sig_atomic_t`_ is defined by the ISO C standard to be the type of variable that can be written without being interrupted
+
+## `sigsuspend` Function
+
+> a way to both restore the signal mask and put the process to sleep in a single atomic operation.
+```c
+#include <signal.h>
+int sigsuspend(const sigset_t *sigmask);
+```
+- The signal mask of the process is set to the value pointed to by sigmask. Then the process is suspended until a signal is caught or until a signal occurs that terminates the process.
+- If a signal is caught and if the signal handler returns, then sigsuspend returns, _and the signal mask of the process is set to its value before the call to sigsuspend_.
+
+## `abort` Function
+
 TODO

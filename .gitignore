@@ -5,3 +5,4 @@ ln-*/
 tmp*
 *test*
 *.pdf
+.vscode/*
