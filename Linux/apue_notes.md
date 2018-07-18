@@ -1112,4 +1112,13 @@ int sigsuspend(const sigset_t *sigmask);
 
 ## `abort` Function
 
+```c
+#include <stdlib.h>
+void abort(void);
+```
+> sends the SIGABRT signal to the caller.
+
+- after calling `abort` and the `SIGABRT` handler, the process will terminate.
+
+## sleep, nanosleep, and clock_nanosleep Functions
 TODO
