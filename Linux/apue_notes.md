@@ -1121,4 +1121,48 @@ void abort(void);
 - after calling `abort` and the `SIGABRT` handler, the process will terminate.
 
 ## sleep, nanosleep, and clock_nanosleep Functions
+```c
+#include <unistd.h>
+unsigned int sleep(unsigned int seconds);
+```
+- cause the calling process to be suspended until either
+    1. The amount of wall clock time specified by seconds has elapsed.
+    2. A signal is caught by the process and the signal handler returns.
+
+## `sigqueue` Function
+
+## Job-Control Signals
+
+- `SIGCHLD`, `SIGCONT`, `SIGSTOP`, `SIGTSTP`, `SIGTTIN`, `SIGTTOU`
+
+# Chapter 11. Threads
+
+## intro
+
+> A thread consists of the information necessary to represent an execution context within a process. This includes a thread ID that identifies the thread within a process, a set of register values, a stack, a scheduling priority and policy, a signal mask, an errno variable (recall Section 1.7), and thread-specific data (Section 12.6)
+
+## Thread Identification
+
+- the thread ID has significance only within the context of the process to which it belongs.
+- portable implementations can’t treat them as integers. So portable thread equality comparation:
+    ```c
+    #include <pthread.h>
+    int pthread_equal(pthread_t tid1, pthread_t tid2);
+    ``` 
+
+- get thread self id
+    ```c
+    #include <pthread.h>
+    pthread_t pthread_self(void);
+    ``` 
+## Thread Creation
+```c
+#include <pthread.h>
+int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr, void *(*start_rtn)(void *), void *restrict arg);
+```
+
+- The newly created thread has access to the process address space and inherits the calling thread’s floating-point environment and signal mask; however, the set of pending signals for the thread is cleared.
+
+## Thread Termination
+
 TODO

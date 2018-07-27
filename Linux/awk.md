@@ -297,4 +297,22 @@
     - "@ind_num_asc"
     - "@val_type_asc"
     - and so on ...
-## TODO Page. 179
+
+## `delete` statement
+
+```awk
+delete array[index-expression]
+```
+- It is not an error to delete an element that does not exist.
+- delete all elements:
+    ```awk
+    delete array
+    ``` 
+
+## Multidimensional Arrays
+
+- Multidimensional arrays are supported in awk through concatenation of indices into one string. The separator used for combiantion is the value of the built-in variable _`SUBSEP`_
+
+# Functions
+
+TODO
