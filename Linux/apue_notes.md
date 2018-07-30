@@ -1165,4 +1165,65 @@ int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr
 
 ## Thread Termination
 
-TODO
+- If any thread within a process calls exit, _Exit, or _exit, then the entire process terminates.
+
+
+1. The thread can simply return from the start routine. The return value is the thread’s exit code.
+2. The thread can be canceled by another thread in the same process.
+3. The thread can call pthread_exit.
+
+    ```c
+    #include <pthread.h>
+    void pthread_exit(void *rval_ptr);
+    ```
+    The `rval_ptr` argument is a typeless pointer,This pointer is available to other threads in the process by calling the `pthread_join` function.
+    ```c
+    #include <pthread.h> 
+    int pthread_join(pthread_t thread, void **rval_ptr);
+    ```
+    > The calling thread will block until the specified thread calls pthread_exit, returns from its start routine, or is canceled. If the thread simply returned from its start routine, rval_ptr will contain the return code. If the thread was canceled, the memory location specified by rval_ptr is set to PTHREAD_CANCELED.
+
+ 
+ ```c
+#include <pthread.h> 
+int pthread_cancel(pthread_t tid);
+```
+- A thread can arrange for functions to be called when it exits, similar to the way that the _`atexit`_ function. The handlers are recorded in a stack, which means that they are executed in the reverse order from that with which they were registered.
+    ```c
+    #include <pthread.h>
+    void pthread_cleanup_push(void (*rtn)(void *), void *arg);
+    void pthread_cleanup_pop(int execute);
+    ```
+- The _`pthread_cleanup_push`_ function schedules the cleanup function, rtn, to be called with the single argument, arg, when the thread performs one of the following actions:
+ 
+    1. Makes a call to pthread_exit
+    2. Responds to a cancellation request
+    3. Makes a call to pthread_cleanup_pop with a nonzero execute argument
+
+- if the thread terminates by returning from its start routine, its cleanup handlers are not called.
+- <img src='../img/similarity.png'>
+- A Detached thread automatically releases it allocated resources on exit. No other thread needs to join it. But by default all threads are joinable
+    ```c
+    #include <pthread.h>
+    int pthread_detach(pthread_t tid);
+    ```
+
+## Thread Synchronization
+
+## Mutexes
+
+> A _mutex_ is basically a lock that we set (lock) before accessing a shared resource and release (unlock) when we’re done. While it is set, any other thread that tries to set it will block until we release it.
+
+- A mutex variable is represented by the _`pthread_mutex_t`_ data type. init mutex by
+    ```c
+    #include <pthread.h>
+    int pthread_mutex_init(pthread_mutex_t *restrict mutex, const pthread_mutexattr_t *restrict attr);
+    int pthread_mutex_destroy(pthread_mutex_t *mutex);
+    ```
+    lock a mutex by
+    ```c
+    #include <pthread.h>
+    int pthread_mutex_lock(pthread_mutex_t *mutex);
+    int pthread_mutex_trylock(pthread_mutex_t *mutex);
+    int pthread_mutex_unlock(pthread_mutex_t *mutex);
+    ```

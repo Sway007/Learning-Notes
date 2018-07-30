@@ -38,4 +38,41 @@ links:[Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
 
 - compose a container group by `docker-compose.yml`  
     #TODO: fix me
-- 
+
+---------------------
+
+## Docker Network
+
+### bridge network
+
+- default network of created docker container is in `bridge` network that Docker sets up automaticcally.
+- create a user-defined netowrks
+  ```bash
+  docker network create --driver bridge alpine-net
+
+  docker run -dit --name alpine1 --network alpine-net alpine ash
+  ```
+
+- On user-defined networks, containers can not only communicate by IP address, but can also resolve a container name to an IP address. This capability is called automatic service discovery.
+- check network config
+    ```bash
+    docker network inspect 'net'
+    ```
+
+- containers in diffirent bridge network cannot communicate with each other
+- remove network
+    ```bash
+    docker container rm 'net'
+    ```
+
+### host network
+
+- containers in this type of network bind directly to the Docker host’s network, with no network isolation
+
+-----------------------
+
+## docker run
+
+```bash
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+```
