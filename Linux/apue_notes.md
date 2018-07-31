@@ -1327,4 +1327,59 @@ threads have reached the same point, and then continue executing from there.
 
 # Chapter 12. Thread Control
 
-TODO
+## Thread Attributes
+
+- The attribute object is opaque to applications. This means that applications aren’t supposed to know anything about its internal structure, which promotes application portability. Instead, functions are provided to manage the attributes objects.
+- init and destroy
+    ```c
+    #include <pthread.h>
+    int pthread_attr_init(pthread_attr_t *attr);
+    int pthread_attr_destroy(pthread_attr_t *attr);
+    ```
+- If we are no longer interested in an existing thread’s termination status, we can use pthread_detach to allow the operating system to reclaim the thread’s resources when the thread exits.
+    ```c
+    #include <pthread.h>
+    int pthread_attr_getdetachstate(const pthread_attr_t *restrict attr, int *detachstate);
+    int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate);
+    ```
+    detachstate: _`PTHREAD_CREATE_DETACHED`_, _`PTHREAD_CREATE_JOINABLE`_
+
+## Synchronization Attributes
+
+### Mutex Attributes
+
+- init and destroy 
+    ```c
+    #include <pthread.h>
+    int pthread_mutexattr_init(pthread_mutexattr_t *attr);
+    int pthread_mutexattr_destroy(pthread_mutexattr_t *attr);
+    ```
+- attr:
+    - _process-shared_: `PTHREAD_PROCESS_SHARED`(default), `PTHREAD_PROCESS_PRIVATE`
+    - _robust_: 
+        - `PTHREAD_MUTEX_STALLED`(default): no special action is taken when a process terminates while holding a mutex
+        - `PTHREAD_MUTEX_ROBUST`: 当一个锁的owner死掉后，其它线程再去lock这个锁的时候，不会被阻塞，而是通过返回值EOWNERDEAD来报告错误
+    - _type_:
+        - _`PTHREAD_MUTEX_NORMAL`_
+        - _`PTHREAD_MUTEX_ERRORCHECK`_
+        - _`PTHREAD_MUTEX_RECURSIVE`_
+        - _`PTHREAD_MUTEX_DEFAULT`_
+
+    ```c
+    #include <pthread.h>
+    int pthread_mutexattr_getpshared(const pthread_mutexattr_t * restrict attr, int *restrict pshared);
+    int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int pshared);
+
+    int pthread_mutexattr_getrobust(const pthread_mutexattr_t * restrict attr, int *restrict robust);
+    int pthread_mutexattr_setrobust(pthread_mutexattr_t *attr, int robust);
+
+    #include <pthread.h>
+    int pthread_mutex_consistent(pthread_mutex_t * mutex);
+
+    #include <pthread.h>
+    int pthread_mutexattr_gettype(const pthread_mutexattr_t * restrict attr, int *restrict type);
+    int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type);
+    ```
+    <img src='../img/pthread_type.png'>
+
+# TODO Page.434 example
