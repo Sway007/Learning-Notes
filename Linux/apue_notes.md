@@ -1230,4 +1230,101 @@ int pthread_cancel(pthread_t tid);
 
 ## Deadlock Avoidance
 
+> For example, when we use more than one mutex in our programs, a deadlock can occur if we allow one thread to hold a mutex and block while trying to lock a second mutex at the same time that another thread holding the second mutex tries to lock the first mutex.
+
+## Reader-Writer Locks
+
+> Only one thread at a time can hold a reader–writer lock in write mode, but multiple threads can hold a reader–writer lock in read mode at the same time.
+- When a reader–writer lock is write locked, all threads attempting to lock it block until it is unlocked
+- When a reader–writer lock is read locked, all threads attempting to lock it in read mode are given access, but any threads attempting to lock it in write mode block until all the threads have released their read locks.
+- Reader–writer locks are well suited for situations in which data structures are read more often than they are modified
+- When a reader–writer lock is read locked, it is said to be locked in shared mode. When it is write locked, it is said to be locked in exclusive mode.
+- init and destroy
+    ```c
+    #include <pthread.h>
+    int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr);
+    int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);
+    ```
+    Before freeing the memory backing a reader–writer lock, we need to call pthread_rwlock_destroy to clean up the resources allocated for the lock.
+- To lock a reader–writer lock in read mode, we call pthread_rwlock_rdlock. To write lock a reader–writer lock, we call pthread_rwlock_wrlock. Regardless of how we lock a reader–writer lock, we can unlock it by calling pthread_rwlock_unlock.
+    ```c
+    #include <pthread.h>
+    int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
+    int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
+    int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
+
+    #include <pthread.h>
+    int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
+    int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
+    Both return: 0 if OK, error num
+
+    #include <pthread.h>
+    #include <time.h>
+    int pthread_rwlock_timedrdlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict tsptr);
+    int pthread_rwlock_timedwrlock(pthread_rwlock_t *restrict rwlock, const struct timespec *restrict tsptr);
+    ``` 
+
+## Condition Variables
+
+- The condition itself is protected by a mutex. A thread must first lock the mutex to change the condition state.
+- init and destroy
+    ```c
+    #include <pthread.h>
+    int pthread_cond_init(pthread_cond_t *restrict cond, const pthread_condattr_t *restrict attr);
+    int pthread_cond_destroy(pthread_cond_t *cond);
+    ``` 
+- use _`pthread_cond_wait`_ to wait for a condition to be true.
+    ```c
+    #include <pthread.h>
+    int pthread_cond_wait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex);
+    int pthread_cond_timedwait(pthread_cond_t *restrict cond, pthread_mutex_t *restrict mutex,
+    const struct timespec *restrict tsptr);
+    ``` 
+    _**The mutex passed to pthread_cond_wait protects the condition. The caller passes it locked to the function, which then atomically places the calling thread on the list of threads waiting for the condition and unlocks the mutex**_.
+    - When pthread_cond_wait returns, the mutex is again locked
+    - When it returns from a successful call to pthread_cond_wait or pthread_cond_timedwait, **_a thread needs to reevaluate the condition, since another thread might have run and already changed the condition_**.
+- The pthread_cond_signal function will wake up at least one thread waiting on a condition, whereas the pthread_cond_broadcast function will wake up all threads waiting on a condition.
+    ```c
+    #include <pthread.h>
+    int pthread_cond_signal(pthread_cond_t *cond);
+    int pthread_cond_broadcast(pthread_cond_t *cond);
+    ``` 
+
+## Spin Locks
+
+> A spin lock is like a mutex, except that instead of blocking a process by sleeping, the process is blocked by busy-waiting (spinning) until the lock can be acquired.
+> In fact, some mutex implementations will spin for a limited amount of time trying to acquire the mutex, and only sleep when the spin count threshold is reached.
+```c
+#include <pthread.h>
+int pthread_spin_init(pthread_spinlock_t *lock, int pshared);
+int pthread_spin_destroy(pthread_spinlock_t *lock);
+
+int pthread_spin_lock(pthread_spinlock_t *lock);
+int pthread_spin_trylock(pthread_spinlock_t *lock);
+int pthread_spin_unlock(pthread_spinlock_t *lock);
+```
+
+## Barriers
+
+> A barrier allows each thread to wait until all cooperating
+threads have reached the same point, and then continue executing from there.
+> _pthread_join_ function acts as a barrier to allow one thread to wait until another thread exits.
+
+- init and destroy
+    ```c
+    #include <pthread.h>
+    int pthread_barrier_init(pthread_barrier_t *restrict barrier, const pthread_barrierattr_t *restrict attr,
+    unsigned int count);
+    int pthread_barrier_destroy(pthread_barrier_t *barrier);
+    ``` 
+    use the count argument to specify the number of threads that must reach the barrier before all of the threads will be allowed to continue
+- use the pthread_barrier_wait function to indicate that a thread is done with its work and is ready to wait for all the other threads to catch up.
+    ```c
+    #include <pthread.h>
+    int pthread_barrier_wait(pthread_barrier_t *barrier);
+    ``` 
+    Once the barrier count is reached and the threads are unblocked, the barrier can be used again. However, the barrier count can’t be changed unless we call the pthread_barrier_destroy function followed by the pthread_barrier_init function with a different count.
+
+# Chapter 12. Thread Control
+
 TODO
