@@ -1074,6 +1074,7 @@ int sigaction(int signo, const struct sigaction *restrict act, struct sigaction 
     }
     ```
     - _`sa_handler`_: the address of a signal-catching function or SIG_DFL, SIG_IGN
+    - _**When changing the action for a signal, the sa_mask field specifies a set of signals that are added to the signal mask of the process before the signal-catching function is called. If and when the signal-catching function returns, the signal mask of the process is reset to its previous value**_.
     - we are guaranteed that whenever we are processing a given signal, another occurrence of that same signal is blocked until we’re finished processing the first occurrence.
     - Once we install an action for a given signal, that action remains installed until we explicitly change it by calling sigaction
     - `SA_SIGINFO` in `sa_flags`: This option provides additional information to a signal handler: a pointer to a siginfo structure and a pointer to an identifier for the process context.
@@ -1336,6 +1337,8 @@ threads have reached the same point, and then continue executing from there.
     int pthread_attr_init(pthread_attr_t *attr);
     int pthread_attr_destroy(pthread_attr_t *attr);
     ```
+    When a thread attributes object is no longer required, it should be destroyed using the pthread_attr_destroy() function.  Destroying a thread attributes object has no effect on threads that were created using that object.
+
 - If we are no longer interested in an existing thread’s termination status, we can use pthread_detach to allow the operating system to reclaim the thread’s resources when the thread exits.
     ```c
     #include <pthread.h>
@@ -1382,4 +1385,116 @@ threads have reached the same point, and then continue executing from there.
     ```
     <img src='../img/pthread_type.png'>
 
-# TODO Page.434 example
+### Reader-Writer Lock Attributes
+
+```c
+#include <pthread.h>
+int pthread_rwlockattr_init(pthread_rwlockattr_t *attr);
+int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr);
+
+
+#include <pthread.h>
+int pthread_rwlockattr_getpshared(const pthread_rwlockattr_t * restrict attr, int *restrict pshared);
+int pthread_rwlockattr_setpshared(pthread_rwlockattr_t *attr, int pshared);
+``` 
+- The only attribute supported for reader–writer locks is the process-shared attribute.
+
+### Condition Variable Attributes
+
+```c
+#include <pthread.h>
+int pthread_condattr_init(pthread_condattr_t *attr);
+int pthread_condattr_destroy(pthread_condattr_t *attr);
+
+#include <pthread.h>
+int pthread_condattr_getpshared(const pthread_condattr_t * restrict attr, int *restrict pshared);
+int pthread_condattr_setpshared(pthread_condattr_t *attr, int pshared);
+
+#include <pthread.h>
+int pthread_condattr_getclock(const pthread_condattr_t * restrict attr, clockid_t *restrict clock_id);
+int pthread_condattr_setclock(pthread_condattr_t *attr, clockid_t clock_id);
+```
+
+## Reentrancy
+
+> If a function can be safely called by multiple threads at the same time, we say that the function is thread-safe.
+
+- Implementations that support thread-safe functions will define the _`_POSIX_THREAD_SAFE_FUNCTIONS`_ symbol in `<unistd.h>`.
+
+## Thread-Specific Data
+
+- Thread-specific data, also known as thread-private data, is a mechanism for storing and finding data associated with a particular thread
+- Before allocating thread-specific data, we need to create a key to associate with the data. The key will be used to gain access to the thread-specific data. We use pthread_key_create to create such a key.
+    ```c
+    #include <pthread.h> 
+    int pthread_key_create(pthread_key_t *keyp, void (*destructor)(void *));
+    ``` 
+    - When the thread exits, if the data address has been set to a non-null value, the destructor function is called with the data address as the only argument.
+    - If destructor is null, then no destructor function is associated with the key.
+    - When the thread exits normally, either by calling pthread_exit or by returning, the destructor is called
+    - if the thread calls exit, _exit, _Exit, or abort, or otherwise exits abnormally, the destructor is not called
+    - If the thread exited without freeing the memory, then the memory would be lost—leaked by the process.
+    - 
+- break the association of a key with the thread-specific data values for all threads by calling pthread_key_delete.
+    ```c
+    #include <pthread.h>
+    int pthread_key_delete(pthread_key_t key);
+    ``` 
+
+- ensure one function only called once in multi-thread
+    ```c
+    #include <pthread.h>
+    pthread_once_t initflag = PTHREAD_ONCE_INIT;
+    int pthread_once(pthread_once_t *initflag, void (*initfn)(void));
+    ``` 
+    The initflag must be a nonlocal variable (i.e., global or static) and initialized to PTHREAD_ONCE_INIT.
+
+- bound and retrieve thread specific data
+    ```c
+    #include <pthread.h>
+    void *pthread_getspecific(pthread_key_t key);
+    int pthread_setspecific(pthread_key_t key, const void *value);
+    ``` 
+
+## Threads and Signals
+- the signal disposition is shared by all threads in the process.
+- the behavior of sigprocmask is undefined in a multithreaded process. Threads have to use the pthread_sigmask function instead.
+    ```c
+    #include <signal.h>
+    int pthread_sigmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
+    ```
+- A thread can wait for one or more signals to occur by calling sigwait.
+    ```c
+    #include <signal.h>
+    int sigwait(const sigset_t *restrict set, int *restrict signop);
+    ``` 
+    - To avoid erroneous behavior, a thread must block the signals it is waiting for before calling sigwait. The sigwait function will atomically unblock the signals and wait until one is delivered. Before returning, sigwait will restore the thread’s signal mask.
+    - If multiple threads are blocked in calls to sigwait for the same signal, only one of the threads will return from sigwait when the signal is delivered.
+    - 
+- To send a signal to a process, we call `kill` (Section 10.9). To send a signal to a thread, we call `pthread_kill`.
+    ```c
+    #include <signal.h>
+    int pthread_kill(pthread_t thread, int signo);
+    ``` 
+    We can pass a signo value of 0 to check for existence of the thread.
+
+- alarm timers are a process resource, and all threads share the same set of alarms. Thus, it is not possible for multiple threads in a process to use alarm timers without interfering (or cooperating) with one another
+
+## Threads and _`fork`_
+
+- By inheriting a copy of the address space, the child also inherits the state of every mutex, reader–writer lock, and condition variable from the parent process
+- Inside the child process, only one thread exists. It is made from a copy of the thread that called fork in the parent.
+- To clean up the lock state, we can establish fork handlers by calling the function `pthread_atfork`.
+    ```c
+    #include <pthread.h>
+    int pthread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void));
+    ``` 
+    The expected usage is that the prepare handler acquires all mutex locks and the other two fork handlers release them.
+
+## Threads and I/O
+
+using `pread` and `pwrite` to make the setting of the offset and the reading/writing of the data one  atomic operation.
+
+# Chapter 13. Daemon Processes
+
+TODO
