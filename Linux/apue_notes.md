@@ -1530,4 +1530,20 @@ the entire file, only one such write lock will be allowed to be created. Success
 
 # Chapter 14. Advanced I/O
 
-TODO
+## Nonblocking I/O
+
+> system calls are divided into two categories: the ‘‘slow’’
+ones and all the others
+- "slow":
+    - Reads that can block the caller forever if data isn’t present with certain file types(pipes, terminal devices, and network devices)
+    - Writes that can block the caller forever if the data can’t be accepted immediately by these same file types
+    - Certain ioctl operations
+    - Some of the interprocess communication functions
+- two ways to specify nonblocking I/O for a given descriptor
+    - If we call open to get the descriptor, we can specify the `O_NONBLOCK` flag
+    - For a descriptor that is already open, we call _`fcntl`_ to turn on the `O_NONBLOCK` file status flag
+
+## Record Locking
+
+> Record locking is the term normally used to describe the ability of a process to prevent other processes from modifying a region of a file while the first process is reading or modifying that portion of the file.
+> Under the UNIX System, ‘‘record’’ is a range of a file (possibly the entire file) that is locked.
