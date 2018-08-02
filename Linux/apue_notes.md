@@ -1457,12 +1457,14 @@ int pthread_condattr_setclock(pthread_condattr_t *attr, clockid_t clock_id);
     ``` 
 
 ## Threads and Signals
-- the signal disposition is shared by all threads in the process.
+
+- **the signal disposition is shared by all threads in the process.**
 - the behavior of sigprocmask is undefined in a multithreaded process. Threads have to use the pthread_sigmask function instead.
     ```c
     #include <signal.h>
     int pthread_sigmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
     ```
+- if you want a specific thread to recieve signal, you have to call `pthread_sigmask` to block the signal for all other threads.
 - A thread can wait for one or more signals to occur by calling sigwait.
     ```c
     #include <signal.h>
@@ -1496,5 +1498,36 @@ int pthread_condattr_setclock(pthread_condattr_t *attr, clockid_t clock_id);
 using `pread` and `pwrite` to make the setting of the offset and the reading/writing of the data one  atomic operation.
 
 # Chapter 13. Daemon Processes
+
+## Coding Rules
+
+1. Call `umask` to set the file mode creation mask to a known value, usually 0.
+2. Call `fork` and have the parent `exit`
+3. Call `setsid` to create a new session, disassociated from its controlling terminal.
+4. Change the current working directory to the root directory. If the daemon stays on a mounted file system, that file system cannot be unmounted
+5. Unneeded file descriptors should be closed. Can use the getrlimit function (Section 7.11) to determine the highest descriptor and close all descriptors up to that value.
+6. Some daemons open file descriptors 0, 1, and 2 to /dev/null so that any library routines that try to read from standard input or write to standard output or standard error will have no effect.
+
+## Logging
+
+```c
+#include <syslog.h>
+void openlog(const char *ident, int option, int facility);
+void syslog(int priority, const char *format, ...);
+void closelog(void);
+int setlogmask(int maskpri);
+```
+
+## Single-Instance Daemons
+
+> creates a file with a fixed name and places a write lock on
+the entire file, only one such write lock will be allowed to be created. Successive attempts to create write locks will fail, serving as an indication to successive copies of the daemon that another instance is already running.
+
+## Daemon Conventions
+
+- If the daemon uses a lock file, the file is usually stored in `/var/run`. The name of the file is usually name.pid
+- If the daemon supports configuration options, they are usually stored in /etc. The configuration file is named name.conf
+
+# Chapter 14. Advanced I/O
 
 TODO
