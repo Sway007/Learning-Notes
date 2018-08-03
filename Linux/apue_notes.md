@@ -1547,3 +1547,129 @@ ones and all the others
 
 > Record locking is the term normally used to describe the ability of a process to prevent other processes from modifying a region of a file while the first process is reading or modifying that portion of the file.
 > Under the UNIX System, ‘‘record’’ is a range of a file (possibly the entire file) that is locked.
+
+# TODO merge here!
+
+- To obtain a read lock, the descriptor must be open for reading; to obtain a write lock, the descriptor must be open for writing.
+- commands(_cmd_) for record locking in `fcntl` funtion:
+    - `F_GETLK`: Determine whether the lock described by flockptr is blocked by some other lock.
+        > If a lock exists that would prevent ours from being created, the information on that existing lock overwrites the information pointed to by flockptr. If no lock exists that would prevent ours from being created, the structure pointed to by flockptr is left unchanged except for the l_type member, which is set to F_UNLCK. 
+    - `F_SETLK`: Set the lock described by flockptr
+    - `F_SETLKW`: a blocking version of `F_SETLK`. If the requested read lock or write lock cannot be granted because another process currently has some part of the requested region locked, the calling process is put to sleep. The process wakes up **_either when the lock becomes available or when interrupted by a signal_**.
+
+- rules of record locks
+    - Locks are associated with a process and a file.
+        - when a process terminates, all its locks are released.
+        - whenever a descriptor is closed, any locks on the file referenced by that descriptor for that process are released.
+        - Locks are never inherited by the child across a fork
+        - Locks are inherited by a new program across an exec.
+
+- [advisory and mandatory lock links](https://www.thegeekstuff.com/2012/04/linux-file-locking-types)
+  
+## I/O Multiplexing
+
+### `select` and `pselect` Functions
+
+- The arguments we pass to select tell the kernel
+    - Which descriptors we’re interested in.
+    - Which conditions we’re interested in for each descriptor
+    - How long we want to wait.
+- On the return from select, the kernel tells us
+    - The total count of the number of descriptors that are ready
+    - Which descriptors are ready for each of the three conditions
+
+```c
+#include <sys/select.h>
+int select(int maxfdp1, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict exceptfds, struct timeval *restrict tvptr);
+```
+- `tvptr == NULL`: wait forever
+- `tvptr−>tv_sec == 0 && tvptr−>tv_usec == 0`: don't wait at all.
+
+- The middle three arguments—`readfds`, `writefds`, and `exceptfds—are` pointers to descriptor sets. These three sets specify which descriptors we’re interested in and for which conditions (readable, writable, or an exception condition)
+- We can consider `fd_set` to be just a big array of bits
+    ```c
+    #include <sys/select.h>
+    int FD_ISSET(int fd, fd_set *fdset);
+                // Returns: nonzero if fd is in set, 0 otherwise
+    void FD_CLR(int fd, fd_set *fdset);
+    void FD_SET(int fd, fd_set *fdset);
+    void FD_ZERO(fd_set *fdset);
+    ``` 
+    After declaring a descriptor set, we must zero the set using `FD_ZERO`. We then set bits in the set for each descriptor that we’re interested in
+
+- If all three pointers are NULL, then we have a higher-precision timer than is provided by sleep
+- By specifying the highest descriptor that we’re interested in, we can prevent the kernel from going through hundreds of unused bits in the three descriptor sets, looking for bits that are turned on
+- returns of `select`:
+    - A return value of −1 means that an error occurred
+    - A return value of 0 means that no descriptors are ready
+    - A positive return value specifies the number of descriptors that are ready. This value is the sum of the descriptors ready in all three sets
+
+- "ready" means:
+    - A descriptor in the read set (readfds) is considered ready if a read from that descriptor won’t block.
+    - A descriptor in the write set (writefds) is considered ready if a write to that descriptor won’t block.
+    - File descriptors for regular files always return ready for reading, writing, and exception conditions.
+
+## `poll` Function
+
+```c
+#include <poll.h>
+int poll(struct pollfd fdarray[], nfds_t nfds, int timeout);
+        // Returns: count of ready descriptors, 0 on timeout, −1 on error
+```
+
+- `struct pollfd`:
+    <img src='../img/pollfd.png'> 
+
+[select poll and epoll](https://segmentfault.com/a/1190000003063859)
+
+## POSIX Asynchronous I/O
+
+<img src="../img/struct_aiocb.png">
+<img src="../img/sigevent.png">
+
+```c
+#include <aio.h>
+int aio_read(struct aiocb *aiocb);
+int aio_write(struct aiocb *aiocb);
+   // Both return: 0 if OK, −1 on error
+```
+- the asynchronous I/O request has been queued for processing by the operating system. The return value bears no relation to the result of the actual I/O operation
+
+## TODO ...
+
+## `readv` and `writev` Functions
+
+```c
+#include <sys/uio.h>
+ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
+ssize_t writev(int fd, const struct iovec *iov, int iovcnt);
+
+struct iovec {
+    void  *iov_base;    /* starting address of buffer */
+    size_t iov_len;     /* size of buffer */
+}
+```
+
+read into and write from multiple noncontiguous buffers in a single function call
+
+[example](https://blog.csdn.net/iEearth/article/details/46730669)
+
+## `readn` and `writen` Functions
+
+> Pipes, FIFOs, and some devices—notably terminals and networks—have the following
+two properties.  
+    1. A read operation may return less than asked for, even though we have not encountered the end of file. This is not an error, and we should simply continue reading from the device.  
+    2. A write operation can return less than we specified. This may be caused by kernel output buffers becoming full
+
+```c
+#include "apue.h"
+ssize_t readn(int fd, void *buf, size_t nbytes);
+ssize_t writen(int fd, void *buf, size_t nbytes);
+```
+call read or write as many times as required to read or write the entire N bytes of data.
+
+## Memory-Mapped I/O
+
+> Memory-mapped I/O lets us map a file on disk into a buffer in memory so that, when we fetch bytes from the buffer, the corresponding bytes of the file are read. Similarly, when we store data in the buffer, the corresponding bytes are automatically written to the file. This lets us perform I/O without using read or write.
+
+todo
