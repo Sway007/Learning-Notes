@@ -200,7 +200,7 @@ int truncate(const char *pathname, off_t length);
 int ftruncate(int fd, off_t length);
 
 ```
-- if the previous size was less than length, the file size will increase and the data between the old end of file and the new end of file will read as 0 (i.e., a hole is probably created in the file).
+- If the previous size of the file was greater than length, the data beyond length is no longer accessible. Otherwise, if the previous size was less than length, the file size will increase and the data between the old end of file and the new end of file will read as 0 (i.e., a hole is probably created in the file).
 
 
 *TODO* not understood!
@@ -1672,4 +1672,54 @@ call read or write as many times as required to read or write the entire N bytes
 
 > Memory-mapped I/O lets us map a file on disk into a buffer in memory so that, when we fetch bytes from the buffer, the corresponding bytes of the file are read. Similarly, when we store data in the buffer, the corresponding bytes are automatically written to the file. This lets us perform I/O without using read or write.
 
-todo
+```c
+#include <sys/mman.h>
+void *mmap(void *addr, size_t len, int prot, int flag, int fd, off_t off );
+    // Returns: starting address of mapped region if OK, MAP_FAILED on error
+```
+- have to open this file before we can map it into the address space
+- `off` is the starting offset in the file of the bytes to map
+    | `prot` | Description |
+    |:-----|:----|
+    | `PROT_READ`  | Region can be read |
+    | `PROT_WRITE` | Region can be written |
+    | `PROT_EXEC`  | Region can be executed |
+    | `PROT_NONE`  | Region cannot be accessed |
+    The protection specified for a region can’t allow more access than the open mode of the file
+- `flag`:
+    - `MAP_SHARED`:
+    - `MAP_PRIVATE`: specify the store/write affect on the mapped memory.
+
+- A memory-mapped region is inherited by a child across a fork (since it’s part of the parent’s address space), but for the same reason, is not inherited by the new program across an exec.
+- change the permissions on an existing mapping by calling `mprotect`.
+    ```c
+    #include <sys/mman.h>
+    int mprotect(void *addr, size_t len, int prot);
+    ``` 
+
+- call msync to flush the changes to the file that backs the mapping immediately
+    ```c
+    #include <sys/mman.h>
+    int msync(void *addr, size_t len, int flags);
+    ``` 
+- A memory-mapped region is automatically unmapped when the process terminates or we can unmap a region directly by calling the munmap function. Closing the file descriptor used when we mapped the region does not unmap the region.
+    ```c
+    #include <sys/mman.h>
+    int munmap(void *addr, size_t len);
+    ``` 
+
+# Chapter 15. Interprocess Communication(IPC)
+
+## Pipes
+
+- Historically, they have been half duplex (i.e., data flows in only one direction). Some systems now provide full-duplex pipes, but for maximum portability, we should never assume that this is the case.
+- Pipes can be used only between processes that have a common ancestor
+- creation
+    ```c
+    #include <unistd.h>
+    int pipe(int fd[2]);
+    ``` 
+    fd[0] is open for reading, and fd[1] is open for writing. The output of fd[1] is the input for fd[0].
+- when one end of a pipe is closed, tow rules apply:
+    1. if write end is closed, `read` return 0 to indicate an end of file after all the data has been read.
+    2. if write to a pipe whose read end is closed, the signal `SIGPIPE` is generated. `write` return -1 with `errno` set to `EPIPE`

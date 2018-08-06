@@ -47,3 +47,7 @@ du -sh [sub dir]
 ## check file stat
 
     stat *file*
+
+# xargs
+
+- `-I`: Replace occurrences of replace-str in the initial-arguments with  names  read  from standard  input
