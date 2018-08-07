@@ -275,4 +275,69 @@ delete all the rows from a table. TRUNCATE is not transaction safe.
 
 # Chapter 8. MySQL Built-in Functions
 
-TODO
+## Aliases
+
+rename columns or expressions in a SELECT statement, and the new name will be what is shown in the output.
+```sql
+select name as employeeName
+from employee;
+```
+- as is optional
+    ```sql
+    select name employeeName
+    from employee;
+
+    select e.name
+    from employee e;
+    ``` 
+
+## WHERE
+
+- cannot use any column aliases in the WHERE clause.
+
+## Removing Duplicates with DISTINCT
+
+## Using the GROUP BY Clause
+
+- consider retrieved rows in groups
+- useful when we use it in combination with functions that operate over a group of rows
+- sort the group order in which the results are presented by ASC/DESC. The default order is ascending
+- A GROUP BY with a HAVING clause is like a SELECT with a WHERE clause. For example: 
+    ```SQL
+    select count(*), job from employee
+    group by job having count(*)=1;
+    ```
+
+## Sorting Search Results with ORDER BY
+
+- sort the result rows on one or more columns. The sort can be either ascending
+    ```sql
+    select * from employee
+    order by job asc, name desc;
+    ``` 
+
+# LIMIT
+
+- When we pass two parameters to limit, the first parameter is the offset (start point) and the second parameter is the maximum number of rows we would like returned.
+
+    ```sql
+    select *
+    from employeeSkills
+    limit 5, 3;
+    ```
+
+## Summary
+- SELECT statement:
+    ```sql
+    SELECT columns
+    FROM tables
+    [WHERE conditions]
+    [ GROUP　BY group 
+        [HAVING group_conditions ] 
+    ]
+    [ORDER BY sort_columns]
+    [LIMIT limits];`
+    ``` 
+
+# Chapter 7. Advanced Queries
+
