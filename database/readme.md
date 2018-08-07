@@ -221,6 +221,58 @@ delete all the rows from a table. TRUNCATE is not transaction safe.
 - The IGNORE number LINES clause tells MySQL to ignore the first number lines in the infile.
 - The final clause allows you to specify that you only want to read data into some of the table's columns
 
-# Chapter 6. Querying MySQL
+# Querying MySQL
+
+- `from t1, t2` is Cartesian product of t1 and t2, also called a full join or cross join.
+- `JOIN / CORSS JOIN / INNER JOIN`
+    same as connect tables with comma -- "full join"   
+    When we perform this type of join, MySQL looks at the tables we are joining and tries to work out the most efficient way to join them together, rather than necessarily joining the tables in the order we have listed.
+
+- LEFT and RIGHT Joins
+    ```sql
+    select employee.name
+    from employee left join assignment
+    on employee.employeeID = assignment.employeeID
+    where clientID is null;
+    ```
+    The left join works by taking the left-hand table in the join (in this case, employee) and trying to match it to rows in the right-hand table. These matching rows are placed alongside the left table. For each row in the left table that has no matching rows in the right table, the LEFT JOIN substitutes a row of NULL values. We can find rows from the left table that have no matching row in the right table by searching for a NULL key value. 
+    ```shell
+    mysql> select * from employee left join assignment on employee.employee_id = assignment.employee_id;
+
+    +-------------+---------------+-----------------------+---------------+-----------+-------------+------------+-------+
+    | employee_id | name          | job                   | department_id | client_id | employee_id | workdate   | hours |
+    +-------------+---------------+-----------------------+---------------+-----------+-------------+------------+-------+
+    |        7513 | Nora Edwards  | Programmer            |           128 |         1 |        7513 | 2003-01-20 |   8.5 |
+    |        6651 | Ajay Patel    | Programmer            |           128 |      NULL |        NULL | NULL       |  NULL |
+    |        9006 | Candy Burnett | Systems Administrator |           128 |      NULL |        NULL | NULL       |  NULL |
+    |        9842 | Ben Smith     | DBA                   |            42 |      NULL |        NULL | NULL       |  NULL |
+    +-------------+---------------+-----------------------+---------------+-----------+-------------+------------+-------+
+    ```
+    the `on` statement is for creating null columns in the resulted joined-rows.
+
+- subqueries
+
+    ```sql
+    select e.employeeID, e.name
+    from employee e, assignment a
+    where e.employeeID = a.employeeID
+    and a.hours = (select max(hours) from assignment);
+    ```
+
+    `EXIST`:
+    ```sql
+    select e.name, e.employeeID
+    from employee e
+    where not exists
+            (select *
+            from assignment
+            where employeeID = e.employeeID);
+    ```
+    `ALL, IN, SOME, ANY`
+
+- `SELECT` summary
+    <img src='../img/sql_select.png'> 
+
+# Chapter 8. MySQL Built-in Functions
 
 TODO
