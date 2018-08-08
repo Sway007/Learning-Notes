@@ -315,4 +315,7 @@ delete array[index-expression]
 
 # Functions
 
-TODO
+## string manipulation function
+
+- gsub(regexp, replacement [, target])
+     Search target for all of the longest, leftmost, nonoverlapping matching substrings it can find and replace them with replacement. The ‘g’ in gsub() stands for “global,” which means replace everywhere.

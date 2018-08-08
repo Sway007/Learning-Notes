@@ -339,5 +339,77 @@ from employee;
     [LIMIT limits];`
     ``` 
 
-# Chapter 7. Advanced Queries
+## Operators in MySQL
 
+- comparing anything to NULL gives a NULL result
+    | operator | meaning |
+    | :---- | :---- |
+    | = | Equality |
+    | != or <> | inequality |
+    | < | less than |
+    | <= | |
+    | > | |
+    | >= | |
+    | n IN (set) | |
+    | <=> | NULL safe equal. Return 1 if compare two NULL |
+
+## Control Flow Functions
+
+- IF
+    ```sql
+    IF (e1, e2, e3)
+    ## If the expression e1 is true, IF returns e2; otherwise, it returns e3.
+    ``` 
+- CASE
+    ```sql
+    CASE value
+    WHEN [compare-value] THEN result
+    [WHEN [compare-value] THEN result ...]
+    [ELSE result]
+    END
+    ``` 
+    or 
+    ```sql
+    CASE
+    WHEN [condition] THEN result
+    [WHEN [condition] THEN result ...]
+    [ELSE result]
+    END
+    ```
+
+- String Comparison Functions
+    
+    LIKE: Performs string wildcard matching.
+
+    RLIKE: Performs regular expression matching.
+
+    STRCMP: String comparison, just like the strcmp() function in C.
+
+    MATCH: Performs full-text searching.
+
+- Functions for Use with GROUP BY Clauses
+    - avg()
+    - count()
+    - min()
+    - max()
+    - std():  standard deviation of the values in column.
+    - sum()
+
+## MySQL Table Types
+
+- table types:
+    - MyISAM (default)
+    - InnoDB
+    - BDB
+    - MERGE
+    - HEAP
+    InnoDB and BDB are ransaction safe. The others are not
+### MyISAM Tables
+
+- A table automatically becomes dynamic or static depending on the definition of its columns. 
+- ables with fixed-length rows will be created as static tables, and tables with variable-length rows will be created as dynamic tables. 
+- The char and numeric types all have a fixed size. The size of varchar, text, and blob columns can vary with the size of their contents. A table with only char and numeric columns will be created as a static table, but a table containing any varchar, text, or blob columns will be dynamic. 
+- Compressing MyISAM Tables
+    - To compress a table, you need to use the command-line program myisampack. 
+    - compressed tables become read-only. If you need to alter, update, or insert data in the table, you need to uncompress the entire table
+- Full-Text Searching on MyISAM Tables (only in MyISAM)
