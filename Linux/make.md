@@ -29,7 +29,16 @@ target ... : prerequisites ...
     - Usually a recipe is in a rule with prerequisites and serves to create a target file if any of the prerequisites change.
 - Targets that do not refer to files but are just actions are called `phony targets`
 
-## `make` workflow
+### `make` workflow
 
 - By default, make starts with the first target (not targets whose names start with ‘.’). This is called the default goal.
 - If some other rule is not depended on by the goal, that rule is not processed, unless you tell make to do so (with a command such as `make clean`).
+
+### variables
+
+```makefile
+var = value
+$(var)  # substitute
+```
+
+# Chapter 3. Writing Makefile
