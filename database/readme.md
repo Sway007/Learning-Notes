@@ -413,3 +413,61 @@ from employee;
     - To compress a table, you need to use the command-line program myisampack. 
     - compressed tables become read-only. If you need to alter, update, or insert data in the table, you need to uncompress the entire table
 - Full-Text Searching on MyISAM Tables (only in MyISAM)
+
+### InnoDB
+- Transactions
+- Row-level locking. Others are table-level locking.
+- support for foreign keys
+
+### HEAP 
+> HEAP tables are extremely fast tables that are stored wholly in memory. They use a hashed indexing scheme that is responsible for their speed. 
+> if you have any power issues, your HEAP data is gone forever. They are, however, great for storing temporary tables. 
+
+## Transactions
+
+- a transaction is a sequence of related instructions that must be treated as one indivisible unit. 
+- A single update statement in MySQL is always atomic. It cannot be interrupted by another query or half succeed. It will complete or will completely fail on an error. 
+- Requesting a lock will implicitly commit any outstanding queries. 
+
+### Locks
+```sql
+LOCK TABLES t1 write/read;
+[queries;]
+UNLOCK t1;
+```
+- Calling LOCK TABLES releases all locks you currently hold
+- different transactions can run on the same table at the same time as long as they are all only reading or do not use the same rows if they are writing. 
+  
+### Transaction Isolation(事物隔离)
+
+- transaction isolation levels
+    - serializable
+    - repeatable read (default)
+    - read committed
+    - read uncommitted
+    ```sql
+    set transaction isolation level serializable;
+    ```
+
+- serializable
+    - ideal from a purity and robustness angle. 
+    - reads and writes on the database should appear to be happening in a sequence
+
+- repeatable read
+    - each transaction gets to work in an isolated version of the table where each row remains as it was when the transaction started. Reading a row is guaranteed to be repeatable. 
+    - phantom read(幻读)
+        - 当前事物可以重复读，就是每次读取的结果集都相同，而不管其他事务有没有提交。
+- read committed
+- read uncommitted
+    - dirty read(脏读)
+        - read changes that other transactions have made before the changes have been committed.
+
+# MySQL Index(索引)
+
+> Indexes are used to find rows with specific column values quickly. Without an index, MySQL must begin with the first row and then read through the entire table to find the relevant rows.  
+> If the table has an index for the columns in question, MySQL can quickly determine the position to seek to in the middle of the data file without having to look at all the data. This is much faster than reading every row sequentially.
+
+- Most MySQL indexes (PRIMARY KEY, UNIQUE, INDEX, and FULLTEXT) are stored in B-trees
+- MySQL uses indexes for these operations:
+    - To find the rows matching a WHERE clause quickly.
+    - If the table has a multiple-column index, any leftmost prefix of the index can be used by the optimizer to look up rows. For example, if you have a three-column index on (col1, col2, col3), you have indexed search capabilities on (col1), (col1, col2), and (col1, col2, col3). 

@@ -1,3 +1,7 @@
+
+- `$` or `jQuery`
+    > The jQuery library exposes its methods and properties via two properties of the window object called jQuery and $. $ is simply an alias for jQuery and it's often employed because it's shorter and faster to write.
+
 - Methods in the $ namespace are generally utility-type methods, and do not work with selections; they are not automatically passed any arguments, and their return value will vary.
 - A page can't be manipulated safely until the document is "ready."
 - Code included inside `$( document ).ready()` will only run once the page Document Object Model (DOM) is ready for JavaScript code to execute. 
