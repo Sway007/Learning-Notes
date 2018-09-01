@@ -1571,6 +1571,8 @@ ones and all the others
   
 ## I/O Multiplexing
 
+> build a list of the descriptors that we are interested in (usually more than one descriptor) and call a function that doesn’t return until one of the descriptors is ready for I/O. Three functions —poll, pselect, and select—allow us to perform I/O multiplexing. On return from these functions, we are told which descriptors are ready for I/O.
+
 ### `select` and `pselect` Functions
 
 - The arguments we pass to select tell the kernel

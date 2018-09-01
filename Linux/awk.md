@@ -319,3 +319,16 @@ delete array[index-expression]
 
 - gsub(regexp, replacement [, target])
      Search target for all of the longest, leftmost, nonoverlapping matching substrings it can find and replace them with replacement. The ‘g’ in gsub() stands for “global,” which means replace everywhere.
+
+## User-defined function
+```awk
+function name([parameter-list])
+{
+    body-of-function
+}
+```
+
+## Passing Function Arguments by Value Or by Reference
+> the passing convention is determined at runtime when the function is called, according to the following rule: if the argument is an array variable, then it is passed by reference. Otherwise, the argument is passed by value.
+
+- pass array by reference, otherwise by value

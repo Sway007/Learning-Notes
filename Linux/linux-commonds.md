@@ -51,3 +51,9 @@ du -sh [sub dir]
 # xargs
 
 - `-I`: Replace occurrences of replace-str in the initial-arguments with  names  read  from standard  input
+
+# 查询监听某个端口的进程信息
+
+```shell
+sudo lsof -i: port
+```
