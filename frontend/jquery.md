@@ -29,4 +29,44 @@
         $( "a" ).attr( "href" ); // Returns the href for the first a element in the document
         ``` 
 
-// TODO: [link](https://learn.jquery.com/using-jquery-core/selecting-elements/)
+- A selection only fetches the elements that are on the page at the time the selection is made.
+- Refining & Filtering Selctions
+  
+   ```js
+    // Refining selections.
+    $( "div.foo" ).has( "p" );         // div.foo elements that contain <p> tags
+    $( "h1" ).not( ".bar" );           // h1 elements that don't have a class of bar
+    $( "ul li" ).filter( ".current" ); // unordered list items with class of current
+    $( "ul li" ).first();              // just the first unordered list item
+    $( "ul li" ).eq( 5 );              // the sixth
+   ```
+
+## Working with Selections
+
+- Setters affect all elements in a selection, whereas getters return the requested value only for the first element in the selection, with the exception of .text(), which retrieves the values of all the elements.
+- Creating new elements
+
+```js
+// Creating new elements from an HTML string.
+$( "<p>This is a new paragraph</p>" );
+$( "<li class=\"new\">new list item</li>" );
+
+// Creating a new element with an attribute object.
+$( "<a/>", {
+    html: "This is a <strong>new</strong> link",
+    "class": "new",
+    href: "foo.html"
+});
+
+```
+
+# Events
+
+- Every event handling function receives an event object
+    - `pageX`, `pageY`
+    - `type`
+    - `which`
+    - `data`
+    - `target`
+    - `timeStamp`
+    - 
