@@ -35,13 +35,9 @@
     }
     ```
 
-
 - `Type`
 
-    键值对中值的类型`Type`的取值如表1所示，而键的类型总是`REDIS_STRING`，即字符串对象
-
-    <div id=t-right>
-        <center>表1</center> <br>
+    键值对中值的类型`Type`的取值如下表所示，而键的类型总是`REDIS_STRING`，即字符串对象
         <table>
             <tr>
                 <th>类型常量</th>
@@ -71,50 +67,47 @@
 
 - `ptr`: 编码和底层实现
 
-    对象的`ptr`指针只想具体的实现数据结构地址，而这些数据结构的具体类型由`encoding`来指定，具体的对应关系见表2   
+    对象的`ptr`指针只想具体的实现数据结构地址，而这些数据结构的具体类型由`encoding`来指定，具体的对应关系见表2
     每种类型的对象都至少使用了2中不同的编码，具体的对应关系见表3
 
-    <div id=t-left>
-        <center>表2</center> <br>
-        <table>
-            <tr>
-                <th>编码常量</th>
-                <th>编码对应的底层数据结构类型</th>
-            </tr>
-            <tr>
-                <td>REDIS_ENCODING_INT</td>
-                <td>LONG型的整数</td>
-            </tr>
-            <tr>
-                <td>REDIS_ENCODING_EMBSTR</td>
-                <td>embstr编码的动态字符串</td>
-            </tr>
-            <tr>
-                <td>REDIS_ENCODING</td>
-                <td>简单动态字符串</td>
-            </tr><tr>
-                <td>REDIS_ENCODING_HT</td>
-                <td>字典</td>
-            </tr>
-            <tr>
-                <td>REDIS_ENCODING_LINKEDLIST</td>
-                <td>双端链表</td>
-            </tr>
-            <tr>
-                <td>REDIS_ENCODING_ZIPLIST</td>
-                <td>压缩链表</td>
-            </tr>
-            <tr>
-                <td>REDIS_ENCODING_INTSET</td>
-                <td>整数集合</td>
-            </tr>
-            <tr>
-                <td>REDIS_ENCODING_SKIPLIST</td>
-                <td>跳跃表和字典</td>
-            </tr>
-        </table>
-    </div>
-    <div id=t-left class='t'>
-    <center>表3</center> <br>
+    表2
+    <table>
+        <tr>
+            <th>编码常量</th>
+            <th>编码对应的底层数据结构类型</th>
+        </tr>
+        <tr>
+            <td>REDIS_ENCODING_INT</td>
+            <td>LONG型的整数</td>
+        </tr>
+        <tr>
+            <td>REDIS_ENCODING_EMBSTR</td>
+            <td>embstr编码的动态字符串</td>
+        </tr>
+        <tr>
+            <td>REDIS_ENCODING</td>
+            <td>简单动态字符串</td>
+        </tr><tr>
+            <td>REDIS_ENCODING_HT</td>
+            <td>字典</td>
+        </tr>
+        <tr>
+            <td>REDIS_ENCODING_LINKEDLIST</td>
+            <td>双端链表</td>
+        </tr>
+        <tr>
+            <td>REDIS_ENCODING_ZIPLIST</td>
+            <td>压缩链表</td>
+        </tr>
+        <tr>
+            <td>REDIS_ENCODING_INTSET</td>
+            <td>整数集合</td>
+        </tr>
+        <tr>
+            <td>REDIS_ENCODING_SKIPLIST</td>
+            <td>跳跃表和字典</td>
+        </tr>
+    </table>
+<br>
+    表3
     <img src='imgs/encoding.png' style="margin: 0 auto;">
-    </div>
