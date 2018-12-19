@@ -1,24 +1,3 @@
-<style>
-#t-right {
-    float: right;
-    margin-left: 10px;
-}
-#t-left {
-    float: left;
-    margin-right: 10px;
-    padding: 20px;
-}
-table {
-    border: 1px solid blue
-}
-img {
-    /* width: 40%; */
-}
-.t{
-    max-width: 40%
-}
-</style>
-
 # 对象处理机制
 
 ## 概述
@@ -56,7 +35,12 @@ img {
     }
     ```
 
-<div id=t-right>
+
+- `Type`
+
+    键值对中值的类型`Type`的取值如表1所示，而键的类型总是`REDIS_STRING`，即字符串对象
+
+    <div id=t-right>
         <center>表1</center> <br>
         <table>
             <tr>
@@ -84,10 +68,6 @@ img {
             </tr>
         </table>
     </div>
-
-- `Type`
-
-    键值对中值的类型`Type`的取值如表1所示，而键的类型总是`REDIS_STRING`，即字符串对象
 
 - `ptr`: 编码和底层实现
 
