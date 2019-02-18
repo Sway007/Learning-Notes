@@ -1787,3 +1787,26 @@ Once we have used mkfifo or mkfifoat to create a FIFO, we open it using open. In
     - semaphores
     - shared memory
 - Each IPC structure is referred to by a non-negative integer identifier.
+
+# Chapter 16. Sockets
+
+## create a socket
+```c
+#include <sys/socket.h>
+int socket(int domain, int type, int protocol);
+    // return: file descriptor if ok, -1 on error
+```
+
+|Domain|Description|
+|--|--|
+|AF_INET|IPv4|
+|AF_INET6|IPv6|
+
+|Type| Description|
+|---|:---|
+|SOCK_DGRAM|fixed-length, connectionless, unreliable messages|
+|SOCK_RAW|datagram interface to IP (optional in POSIX.1)|
+|SOCK_SEQPACKET| fixed-length, sequenced, reliable, connection-oriented messages|
+|SOCK_STREAM | sequenced, reliable, bidirectional, connection-oriented byte streams |
+
+## TCP/IP uses big-endian byte order(network byte order)
