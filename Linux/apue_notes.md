@@ -1810,3 +1810,16 @@ int socket(int domain, int type, int protocol);
 |SOCK_STREAM | sequenced, reliable, bidirectional, connection-oriented byte streams |
 
 ## TCP/IP uses big-endian byte order(network byte order)
+
+## 发送数据流程
+
+Client:
+    1. `open` a socket  
+    [2]. `bind` an address  
+    3. Establish a connection by `connect`
+
+Server:
+    1. `open` a socket
+    2. `bind` an address
+    3. `listen`: get ready to recieve request
+    4. `accept`: pick a recieved request

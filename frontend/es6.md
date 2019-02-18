@@ -77,3 +77,22 @@
 ## Proxy
 
 > 要使得Proxy起作用，必须针对Proxy实例进行操作，而不是针对目标对象进行操作
+
+## Promise
+
+> 注意，调用resolve或reject并不会终结 Promise 的参数函数的执行。
+
+### Promise.prototype.catch
+
+是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生错误时的回调函数。另外，then方法指定的回调函数，如果运行中抛出错误，也会被catch方法捕获。
+
+- reject方法的作用，等同于抛出错误。
+- 如果 Promise 状态已经变成resolved，再抛出错误是无效的。
+
+### Promise.all()
+### Promise.race()
+
+## Iterator
+
+> 遍历器对象除了具有next方法，还可以具有return方法和throw方法。如果你自己写遍历器对象生成函数，那么next方法是必须部署的，return方法和throw方法是否部署是可选的。
+> 注意，return方法必须返回一个对象，这是 Generator 规格决定的。
