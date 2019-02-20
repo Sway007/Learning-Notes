@@ -96,3 +96,24 @@
 
 > 遍历器对象除了具有next方法，还可以具有return方法和throw方法。如果你自己写遍历器对象生成函数，那么next方法是必须部署的，return方法和throw方法是否部署是可选的。
 > 注意，return方法必须返回一个对象，这是 Generator 规格决定的。
+
+## Generator
+
+> 由于 Generator 函数就是遍历器生成函数，因此可以把 Generator 赋值给对象的Symbol.iterator属性，从而使得该对象具有 Iterator 接口。
+> next()、throw()、return()这三个方法本质上是同一件事，可以放在一起理解。它们的作用都是让 Generator 函数恢复执行，并且使用不同的语句替换yield表达式。
+
+  - next()是将yield表达式替换成一个值。
+  - throw()是将yield表达式替换成一个throw语句。
+  - return()是将yield表达式替换成一个return语句。
+
+## async函数
+
+> async函数返回的 Promise 对象，必须等到内部所有await命令后面的 Promise 对象执行完，才会发生状态改变，除非遇到return语句或者抛出错误。也就是说，只有async函数内部的异步操作执行完，才会执行then方法指定的回调函数。
+> async函数内部return语句返回的值，会成为then方法回调函数的参数。
+
+### await命令
+> 正常情况下，await命令后面是一个 Promise 对象，返回该对象的结果（`调用resolve函数的参数`）。如果不是 Promise 对象，就直接返回对应的值。
+
+## Class的基本语法
+
+> 实例属性除了定义在constructor()方法里面的this上面，也可以定义在类的最顶层
