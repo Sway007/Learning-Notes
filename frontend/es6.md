@@ -122,3 +122,48 @@
 - 子类的__proto__属性，表示构造函数的继承，总是指向父类。
 
 - 子类prototype属性的__proto__属性，表示方法的继承，总是指向父类的prototype属性。
+
+## Module
+> export语句输出的接口，与其对应的值是动态绑定关系，即通过该接口，可以取到模块内部实时的值。  
+> export命令可以出现在模块的任何位置，只要处于模块顶层就可以
+
+## Javascript Module 的加载实现
+
+- HTML 网页中，浏览器通过`<script>`标签加载 JavaScript 脚本。
+  
+
+```js
+ <script src="path/to/myModule.js" defer></script>
+<script src="path/to/myModule.js" async></script>
+```
+上面代码中，`<script>`标签打开defer或async属性，脚本就会异步加载。渲染引擎遇到这一行命令，就会开始下载外部脚本，但不会等它下载和执行，而是直接执行后面的命令
+> defer与async的区别是：defer要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成），才会执行；async一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。一句话，defer是“渲染完再执行”，async是“下载完就执行”。
+
+### Node加载
+
+- Node 要求 ES6 模块采用.mjs后缀文件名, 也就是说，只要脚本文件里面使用import或者export命令，那么就必须采用.mjs后缀名
+
+
+
+
+
+
+
+# [Nodejs](https://nodejs.org/docs/latest/api/index.html)
+
+## Modules
+
+- When a file is run directly from Node.js, require.main is set to its module. That means that it is possible to determine whether a file has been run directly by testing `require.main === module`.
+
+### Folders as Modules
+
+- create a package.json file in the root of the folder, which specifies a main module. An example package.json file might look like this:
+    ```json
+    { "name" : "some-library",
+    "main" : "./lib/some-library.js" }
+    ```
+    If this was in a folder at `./some-library`, then `require('./some-library')` would attempt to load `./some-library/lib/some-library.js`.
+
+- If there is no package.json file present in the directory, or if the 'main' entry is missing or cannot be resolved, then Node.js will attempt to load an index.js or index.node file out of that directory. For example, if there was no package.json file in the above example, then require('./some-library') would attempt to load:
+  - ./some-library/index.js
+  - ./some-library/index.node
