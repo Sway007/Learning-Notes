@@ -3,8 +3,4 @@
     "C_Cpp.default.includePath": [
         "./Linux/ln-apue-source/include"
     ],
-    "files.associations": {
-        "stdlib.h": "c",
-        "socket.h": "c"
-    },
 }
