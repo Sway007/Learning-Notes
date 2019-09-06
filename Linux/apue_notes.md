@@ -1823,3 +1823,14 @@ Server:
     2. `bind` an address
     3. `listen`: get ready to recieve request
     4. `accept`: pick a recieved request
+
+## Socket重连
+> portable applications need to close the socket if connect fails. If we want to retry, we have to open a new socket.
+
+一旦socket调用connect(不同语言的方法名可能有差异)方法失败后，如果需要重新建立TCP连接，通用的方法是彻底废弃掉该socket，以nodejs中net库Socket为例
+```js
+socket.destroy()
+socket.unref()
+socket.removeAllListeners()
+```
+之后建立新的socket再尝试与之前的TCP Server建立连接，**详情介绍见** **_APUE P.607_**
