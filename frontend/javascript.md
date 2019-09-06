@@ -47,3 +47,29 @@
         SuperType.call(this);
     }
   ``` 
+
+## Function Expression
+
+## The Document Object Model
+
+#### Offset and client dimension
+
+<center>
+    <img src="img/js/offset.png" height="100">
+    <img src="img/js/client.png" height="100">
+</center>
+
+# MISC
+
+### The diff between constructor and function in js
+
+link: [click me](https://javascript.info/constructor-new)
+
+_**Notice**_: Return from constructors
+
+  [Usually, constructors do not have a return statement. Their task is to write all necessary stuff into this, and it automatically becomes the result.](https://javascript.info/constructor-new#return-from-constructors)
+
+  But if there is a return statement, then the rule is simple:
+
+  - If return is called with object, then it is returned instead of this.
+  - If return is called with a primitive, it’s ignored.
